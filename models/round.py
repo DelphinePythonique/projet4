@@ -43,11 +43,9 @@ class Round:
 
     def do_the_paring_by_total_rounds_result(self):
         players = self.tournament.extract_tournament_player_sort_by_result()
-        print(players)
-        """
+
         for i in range(0, len(players), 2):
-            self.add_match(players[i], players[i + 1])
-        """
+            self.add_match(players[i][0], players[i + 1][0])
 
     def add_match(self, player1, player2):
         self.matchs.append(Match(player1, player2).get_tuples())
