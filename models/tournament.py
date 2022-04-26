@@ -3,44 +3,38 @@ from operator import itemgetter
 
 from models.player import Player
 from models.round import Round
-from workflow.tournament.draft_state import DraftState
-from workflow.tournament.ready_state import ReadyState
-
-DEFAULT_NUMBER_OF_ROUND = 4
-TYPE_OF_TIME_CONTROL = ("bullet", "blitz", "quick_it")
-DEFAULT_STATE = DraftState()
-READY_STATE = ReadyState()
-GOAL_NUMBER_OF_PLAYERS = 8
 
 
 class Tournament:
+    DEFAULT_NUMBER_OF_ROUND = 4
+    TYPE_OF_TIME_CONTROL = ("bullet", "blitz", "quick_it")
+    GOAL_NUMBER_OF_PLAYERS = 8
+
     tournaments = []
-    tournaments_counter_for_identifiant = 0
+    tournaments_counter_for_identifier = 0
 
     @classmethod
     def list_of_tournament(cls):
         pass
 
     def __init__(
-        self,
-        name,
-        place,
-        begin_date,
-        end_date,
-        time_control,
-        state=DEFAULT_STATE,
-        description=None,
-        number_of_round=DEFAULT_NUMBER_OF_ROUND,
+            self,
+            name,
+            place,
+            begin_date,
+            end_date,
+            time_control,
+            description=None,
+            number_of_round=DEFAULT_NUMBER_OF_ROUND,
     ):
         """
 
         :type time_control: str
         """
 
-        Tournament.tournaments_counter_for_identifiant += 1
-        self.identifiant = Tournament.tournaments_counter_for_identifiant
+        Tournament.tournaments_counter_for_identifier += 1
+        self.identifier = Tournament.tournaments_counter_for_identifier
         self.name = name
-        self.set_state(state)
         self.place = place
         self.begin_date = begin_date
         self.end_date = end_date
@@ -52,58 +46,33 @@ class Tournament:
         Tournament.tournaments.append(self)
 
     def __str__(self):
-        return (
-            "tournament:\n"
-            f"Identifiant:{self.identifiant}\n"
-            f"name:{self.name}\n"
-            f"state:{self._state}\n"
-            f"place:{self.place}\n"
-            f"begin_date:{self.begin_date}\n"
-            f"end_date:{self.end_date}\n"
-            f"time_control:{self._time_control}\n"
-            f"description:{self.description}\n"
-            f"number_of_round:{self.number_of_round}\n"
-        )
-
-    def set_state(self, state):
-        self._state = state
-        self._state.tournament = self
-
-    def present_state(self):
-        return self._state
+        lines = [
+            "tournament:",
+            f"Identifier:{self.identifier}",
+            f"name:{self.name}",
+            f"place:{self.place}",
+            f"begin_date:{self.begin_date}",
+            f"end_date:{self.end_date}",
+            f"time_control:{self._time_control}",
+            f"description:{self.description}",
+            f"number_of_round:{self.number_of_round}"
+        ]
+        return "\n".join(lines)
 
     def set_time_control(self, value):
-        if value in TYPE_OF_TIME_CONTROL:
+        if value in Tournament.TYPE_OF_TIME_CONTROL:
             self._time_control = value
         else:
-            raise ValueError(f"Time_control must be in {TYPE_OF_TIME_CONTROL}")
-
-    def transition_to_draft(self):
-        self._state.transition_to_draft()
-
-    def transition_to_ready(self):
-        self._state.transition_to_ready()
-
-    def transition_to_populated(self):
-        self._state.transition_to_populated()
-
-    def transition_to_in_progress(self):
-        self._state.transition_to_in_progress()
-
-    def transition_to_in_closed(self):
-        self._state.transition_to_closed()
-
-    def transition_to_in_archived(self):
-        self._state.transition_to_closed()
+            raise ValueError(f"Time_control must be in {Tournament.TYPE_OF_TIME_CONTROL}")
 
     def add_player(self, player):
         if isinstance(player, Player):
-            self.players.append(player.identifiant)
+            self.players.append(player.identifier)
         elif isinstance(player, int):
-            if Player.find_player_by_identifiant(player):
+            if Player.find_player_by_identifier(player):
                 self.players.append(player)
             else:
-                raise ValueError("no player under this identifiant")
+                raise ValueError("no player under this identifier")
         else:
             raise ValueError("is not a player")
 
@@ -112,17 +81,17 @@ class Tournament:
             self.rounds.append(Round(f"Round {i}", self))
 
     def get_goal_number_of_player(self):
-        return GOAL_NUMBER_OF_PLAYERS
+        return Tournament.GOAL_NUMBER_OF_PLAYERS
 
     def extract_tournament_player_sort_by_ranking(self):
         tournament_players_order_by_ranking = [
-            player for player in Player.list_of_players_by_ranking_sort() if player.identifiant in self.players
+            player for player in Player.list_of_players_by_ranking_sort() if player.identifier in self.players
         ]
         return tournament_players_order_by_ranking
 
     def extract_tournament_player_sort_by_alphabetic(self):
         tournament_players_order_by_alphabetic = [
-            player for player in Player.list_of_players_by_alphabetic_sort() if player.identifiant in self.players
+            player for player in Player.list_of_players_by_alphabetic_sort() if player.identifier in self.players
         ]
         return tournament_players_order_by_alphabetic
 
