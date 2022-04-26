@@ -1,7 +1,7 @@
-from workflow.Tournament.state import State
+from workflow.tournament.state import State
 
 
-class ReadyState(State):
+class InclosedState(State):
     def transition_to_draft(self) -> None:
         pass
 

@@ -1,3 +1,6 @@
+from operator import attrgetter
+
+
 class Player:
     players = []
     players_counter_for_identifiant = 0
@@ -11,12 +14,19 @@ class Player:
         return player_found
 
     @classmethod
+    def get_key(cls):
+        return cls.ranking
+
+    @classmethod
     def list_of_players_by_alphabetic_sort(cls):
-        pass
+        sorted_by_ranking = sorted(cls.players, key=lambda x: x.surname)
+        return sorted_by_ranking
 
     @classmethod
     def list_of_players_by_ranking_sort(cls):
-        pass
+        sorted_by_ranking = sorted(cls.players, key=lambda x: (x.ranking, x.surname), reverse=True)
+        return sorted_by_ranking
+        # return sorted(sorted_by_ranking, key=attrgetter('surname'))
 
     def __init__(self, surname, first_name, date_of_birth, gender, ranking=None):
         Player.players_counter_for_identifiant += 1
@@ -29,14 +39,14 @@ class Player:
 
         Player.players.append(self)
 
-    def __str__(self):
-        return "Player:\n"\
-            f"Identifiant:{self.identifiant}\n"\
-            f"surname:{self.surname}\n"\
-            f"first_name:{self.first_name}\n"\
-            f"date_of_birth:{self.date_of_birth}\n"\
-            f"gender:{self.gender}\n"\
-            f"ranking:{self.ranking}\n"
+    def __repr__(self):
+        return "Player:\n" \
+               f"Identifiant:{self.identifiant}\n" \
+               f"surname:{self.surname}\n" \
+               f"first_name:{self.first_name}\n" \
+               f"date_of_birth:{self.date_of_birth}\n" \
+               f"gender:{self.gender}\n" \
+               f"ranking:{self.ranking}\n"
 
     def set_ranking(self, value):
         self.ranking = value

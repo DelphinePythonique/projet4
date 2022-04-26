@@ -1,4 +1,4 @@
-from workflow.Tournament.state import State
+from workflow.tournament.state import State
 
 
 class PopulatedState(State):
