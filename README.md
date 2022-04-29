@@ -76,6 +76,7 @@ on top, there is menu, and below players list
 Chess tournaments managment - Players
 1 - Add player
 2 - Update Ranking
+3 - Homepage
 ========================================
 PLAYERS
 ========================================
@@ -96,6 +97,7 @@ after that, the *Players screen is updated with new player
 Chess tournaments managment - Players
 1 - Add player
 2 - Update Ranking
+3 - Homepage
 ========================================
 PLAYERS
 ========================================
@@ -106,5 +108,48 @@ PLAYERS
 ##### Add update ranking
 From *Players screen*, enter 2 to update ranking 
 After that the prompt asks you to enter the player id, (*i.e 13 for Jim*)
+``` bash
+Enter player identifier
+1
+Player:
+Identifier:1
+surname:joueurA-100
+first_name:Delphine
+date_of_birth:01/01/1970
+gender:feminine
+ranking:100
+Enter new_ranking
+```
+Then enter the new ranking
 
+#### Manage Tournament
+From *Home screen*, enter 2
+``` bash
+Enter the number of the action to be perform and press enter
+2
+Chess tournaments managment - Tournament
+1 - Add tournament
+2 - Display tournament
+3 - Homepage
+```
+##### Add Tournament
+From *Tournament screen*, enter 1 to add tournament, and answer questions
+after that, the *Tournament screen is updated with new tournament
+
+##### Display Tournament
+From *Tournament screen*, enter 2 to display tournament.
+
+Depends on the state of the tournament, menu items are displayed: 
+Add player, start round, save result.
+
+Read the prompt to know what you can do
+
+The flow is: 
+- After create tournament, state is *draft*. 
+- After add the maximum number of players, state is *ready*.
+- When state is ready, you can start round, state become *in progress*.
+- when state is *in progress*, if a round is started, save result can be processed, 
+else, an other round can be started 
+
+######  
 see you soon for the next step

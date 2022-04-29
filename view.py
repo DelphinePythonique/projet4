@@ -1,7 +1,6 @@
 from models.player import Player
 from models.tournament import Tournament
 
-
 class View:
     def __init__(self):
         pass
@@ -33,6 +32,7 @@ class View:
         lines = ["Chess tournaments managment - Players", "1 - Add player"]
         if len(players) > 0:
             lines.append("2 - Update Ranking")
+            lines.append("3 - Homepage")
             lines.append("========================================")
             lines.append("PLAYERS")
             lines.append("========================================")
@@ -84,6 +84,7 @@ class View:
         lines = ["Chess tournaments managment - Tournament", "1 - Add tournament"]
         if len(tournaments) > 0:
             lines.append("2 - Display tournament")
+            lines.append("3 - Homepage")
             lines.append("========================================")
             lines.append("TOURNAMENTS")
             lines.append("========================================")
@@ -139,6 +140,7 @@ class View:
                 lines.append("3 - save result")
             elif tournament.state_round == Tournament.STATE_ROUND_TO_START:
                 lines.append("2 - start round")
+        lines.append("4 - Homepage")
         lines.append("======================================================================================")
         lines.append(
             f"Tournament {tournament.name} from {tournament.begin_date} to {tournament.end_date} at {tournament.place}"
