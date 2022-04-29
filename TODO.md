@@ -1,17 +1,22 @@
 # TODO
 
 ## player
-- [ ] Can add players
-- [ ] Can change player ranking
+- [X] Can add players
+- [X] Can change player ranking
 ## Tournaments
-- [ ] can create a new tournament
-- [ ] can associate players to a tournaments
+- [X] Can create a new tournament
+- [X] Can associate players to a tournaments
 ### Round
-- [ ] can start a round
-  - [ ] The players of the tournament are associated in pairs according to the 
+- [X] Can start a round
+  - [X] The players of the tournament are associated in pairs according to the 
   Swiss rule
-  - [ ] Can save the results of each match of the round
-- [ ] can close a round
+  - [X] Can save the results of each match of the round
+- [ ] Can close a round
+### Memorise informations
+- [ ] Player
+- [ ] Tournament
+- [ ] Round
+- [ ] Match
 ### Reporting
 - [ ] List of all actors 
   - [ ] in alphabetical order

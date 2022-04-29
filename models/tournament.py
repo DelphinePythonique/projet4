@@ -1,5 +1,5 @@
 from collections import Counter
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 
 from models.player import Player
 from models.round import Round
@@ -8,24 +8,52 @@ from models.round import Round
 class Tournament:
     DEFAULT_NUMBER_OF_ROUND = 4
     TYPE_OF_TIME_CONTROL = ("bullet", "blitz", "quick_it")
+    DEFAULT_TIME_CONTROL = "blitz"
     GOAL_NUMBER_OF_PLAYERS = 8
-
+    STATE_DRAFT = "draft"
+    STATE_READY = "ready"
+    STATE_IN_PROGRESS = "in_progress"
+    STATE_CLOSED = "closed"
+    STATE_ROUND_NO = "state_round_no"
+    STATE_ROUND_STARTED = "state_round_started"
+    STATE_ROUND_TO_START = "state_round_to_start"
     tournaments = []
     tournaments_counter_for_identifier = 0
 
     @classmethod
-    def list_of_tournament(cls):
-        pass
+    def dict_to_object(cls, dict_tournament):
+        if "name" in dict_tournament:
+            name = dict_tournament["name"]
+        if "place" in dict_tournament:
+            place = dict_tournament["place"]
+        if "begin_date" in dict_tournament:
+            begin_date = dict_tournament["begin_date"]
+        if "end_date" in dict_tournament:
+            end_date = dict_tournament["end_date"]
+        if "time_control" in dict_tournament:
+            time_control = dict_tournament["time_control"]
+        if "description" in dict_tournament:
+            description = dict_tournament["description"]
+
+        return Tournament(name, place, begin_date, end_date, time_control, description)
+
+    @classmethod
+    def find_tournament_by_identifier(cls, identifier):
+        tournament_found = None
+        for tournament in cls.tournaments:
+            if tournament.identifier == identifier:
+                tournament_found = tournament
+        return tournament_found
 
     def __init__(
-            self,
-            name,
-            place,
-            begin_date,
-            end_date,
-            time_control,
-            description=None,
-            number_of_round=DEFAULT_NUMBER_OF_ROUND,
+        self,
+        name,
+        place,
+        begin_date,
+        end_date,
+        time_control=DEFAULT_TIME_CONTROL,
+        description=None,
+        number_of_round=DEFAULT_NUMBER_OF_ROUND,
     ):
         """
 
@@ -43,7 +71,44 @@ class Tournament:
         self.players = []
         self.set_time_control(time_control)
         self.description = description
+        self._state = self.state
+
         Tournament.tournaments.append(self)
+
+    @property
+    def state(self):
+        if len(self.players) < Tournament.GOAL_NUMBER_OF_PLAYERS:
+            self._state = Tournament.STATE_DRAFT
+        elif len(self.players) == Tournament.GOAL_NUMBER_OF_PLAYERS and len(self.rounds) == 0:
+            self._state = Tournament.STATE_READY
+
+        elif len(self.rounds) > 0:
+            in_progress_round, next_round = self.which_in_progress_round_and_next_round()
+            if in_progress_round or next_round:
+                self._state = Tournament.STATE_IN_PROGRESS
+            else:
+                self._state = Tournament.STATE_CLOSED
+        return self._state
+
+    @property
+    def state_round(self):
+        if self.state == Tournament.STATE_IN_PROGRESS:
+            in_progress_round, next_round = self.which_in_progress_round_and_next_round()
+            if in_progress_round:
+                self._state_round = Tournament.STATE_ROUND_STARTED
+            elif next_round:
+                self._state_round = Tournament.STATE_ROUND_TO_START
+            else:
+                self._state_round = Tournament.STATE_ROUND_NO
+
+        else:
+            self._state_round = Tournament.STATE_ROUND_NO
+
+        return self._state_round
+    @property
+    def active_round(self):
+        in_progress_round, next_round = self.which_in_progress_round_and_next_round()
+        return in_progress_round
 
     def __str__(self):
         lines = [
@@ -55,7 +120,7 @@ class Tournament:
             f"end_date:{self.end_date}",
             f"time_control:{self._time_control}",
             f"description:{self.description}",
-            f"number_of_round:{self.number_of_round}"
+            f"number_of_round:{self.number_of_round}",
         ]
         return "\n".join(lines)
 
@@ -63,22 +128,41 @@ class Tournament:
         if value in Tournament.TYPE_OF_TIME_CONTROL:
             self._time_control = value
         else:
-            raise ValueError(f"Time_control must be in {Tournament.TYPE_OF_TIME_CONTROL}")
+            self._time_control = Tournament.DEFAULT_TIME_CONTROL
 
     def add_player(self, player):
-        if isinstance(player, Player):
-            self.players.append(player.identifier)
-        elif isinstance(player, int):
-            if Player.find_player_by_identifier(player):
-                self.players.append(player)
-            else:
-                raise ValueError("no player under this identifier")
+        if self.state == Tournament.STATE_DRAFT:
+            if isinstance(player, Player):
+                self.players.append(player.identifier)
+            elif isinstance(player, int):
+                if Player.find_player_by_identifier(player):
+                    self.players.append(player)
+
+    def which_in_progress_round_and_next_round(self):
+        start_rounds = [round for round in self.rounds if round.state == Round.STATE_START]
+        if len(start_rounds) > 0:
+            start_round = start_rounds[0]
         else:
-            raise ValueError("is not a player")
+            start_round = None
+        draft_rounds = [round for round in self.rounds if round.state == Round.STATE_DRAFT]
+        if len(draft_rounds) > 0:
+            draft_round = draft_rounds[0]
+        else:
+            draft_round = None
+        return start_round, draft_round
+
+    def start_round(self):
+        if self.state == Tournament.STATE_READY:
+            self.generate_round()
+            self.rounds[0].start(Round.RANKING_PARING_METHOD)
+        elif self.state == Tournament.STATE_IN_PROGRESS:
+            in_progress_round, next_round = self.which_in_progress_round_and_next_round()
+            if not in_progress_round and next_round:
+                next_round.start(Round.RESULT_PARING_METHOD)
 
     def generate_round(self):
         for i in range(1, self.number_of_round + 1):
-            self.rounds.append(Round(f"Round {i}", self))
+            self.rounds.append(Round(f"Round {i}", self, i))
 
     def get_goal_number_of_player(self):
         return Tournament.GOAL_NUMBER_OF_PLAYERS

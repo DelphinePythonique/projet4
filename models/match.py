@@ -2,7 +2,8 @@ class Match:
     """
     composition([player1,score1],[player2,score2])
     """
-
+    STATE_START = 'start'
+    STATE_STOP = "stop"
     RESULT_WINNER = 1
     RESULT_LOSING = 0
     RESULT_EQUALITY = 0.5
@@ -25,6 +26,15 @@ class Match:
         self.result_player1 = result_player1
         self.result_player2 = result_player2
         Match.matchs.append(self)
+
+    @property
+    def state(self):
+        if self.result_player1 + self.result_player2 == 0:
+            self._state = Match.STATE_START
+        else:
+            self._state = Match.STATE_STOP
+
+        return self._state
 
     @property
     def tuple(self):
