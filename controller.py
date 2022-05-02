@@ -96,5 +96,6 @@ class Controller:
                     match.set_player_two_is_winner()
                 else:
                     match.set_match_equality()
+            tournament.save()
         context['route'] = "display_tournament"
         return context

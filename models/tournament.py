@@ -56,10 +56,12 @@ class Tournament:
                 )
                 tournament.rounds.append(round)
                 for serialized_match in serialized_round["matchs"]:
-                    match = Match(
+                    player1 = Player.find_player_by_identifier(serialized_match[0][0]['Identifier'])
+                    player2 = Player.find_player_by_identifier(serialized_match[1][0]['Identifier'])
+                    Match(
                         round,
-                        serialized_match[0][0],
-                        serialized_match[1][0],
+                        player1,
+                        player2,
                         serialized_match[0][1],
                         serialized_match[1][1],
                     )
