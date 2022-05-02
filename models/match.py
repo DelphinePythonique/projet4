@@ -2,7 +2,8 @@ class Match:
     """
     composition([player1,score1],[player2,score2])
     """
-    STATE_START = 'start'
+
+    STATE_START = "start"
     STATE_STOP = "stop"
     RESULT_WINNER = 1
     RESULT_LOSING = 0
@@ -16,7 +17,7 @@ class Match:
 
     @staticmethod
     def find_match_by_round(round):
-        match_found = [match for match in Match.matchs if match.round == round ]
+        match_found = [match for match in Match.matchs if match.round == round]
         return match_found
 
     def __init__(self, round, player1, player2, result_player1=0, result_player2=0):
@@ -26,6 +27,13 @@ class Match:
         self.result_player1 = result_player1
         self.result_player2 = result_player2
         Match.matchs.append(self)
+
+    def serialized_match_tuple(self):
+        serialized_match = [
+            (self.player1.serialized_player(), self.result_player1),
+            (self.player2.serialized_player(), self.result_player2),
+        ]
+        return serialized_match
 
     @property
     def state(self):

@@ -156,8 +156,8 @@ class View:
             lines.append("---------------------")
             for match in round.matchs:
                 lines.append(
-                    f"match #{round.matchs.index(match)+1}:Player #1:{match[0][0].surname} ({match[0][0].ranking}) - Result:{match[0][1]} /"
-                    f"Player #2 {match[1][0].surname} ({match[1][0].ranking}) - Result:{match[1][1]}"
+                    f"match #{round.matchs.index(match)+1}:Player #1:{match[0][0]['surname']} ({match[0][0]['ranking']}) - Result:{match[0][1]} /"
+                    f"Player #2 {match[1][0]['surname']} ({match[1][0]['ranking']}) - Result:{match[1][1]}"
                 )
         lines.append("Enter the number of the action to be perform and and press enter")
         print("\n".join(lines))

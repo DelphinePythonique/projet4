@@ -23,6 +23,7 @@ class Controller:
         context = self.view.add_player(context)
         if "player" in context:
             player = Player.dict_to_object(context["player"])
+            player.save()
             context["player"] = player
         return context
 
@@ -43,6 +44,7 @@ class Controller:
         context = self.view.add_tournament(context)
         if "tournament" in context:
             tournament = Tournament.dict_to_object(context["tournament"])
+            tournament.save()
             context["tournament"] = tournament
         return context
 
@@ -70,6 +72,7 @@ class Controller:
                     for player_id in players_ids_list:
                         player_id = player_id.strip()
                         tournament.add_player(int(player_id))
+                        tournament.save()
         else:
             context['route'] = "homepage"
         return context
@@ -78,6 +81,7 @@ class Controller:
         if "tournament" in context:
             tournament = context["tournament"]
             tournament.start_round()
+            tournament.save()
         context['route'] = "display_tournament"
         return context
 

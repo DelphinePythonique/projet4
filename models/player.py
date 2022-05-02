@@ -1,6 +1,24 @@
+from tinydb import TinyDB
+from tinydb.table import Document
+
+
 class Player:
     players = []
     players_counter_for_identifier = 0
+    db = TinyDB("db.json")
+    player_table = db.table("players")
+
+    @classmethod
+    def upload_players(self):
+        serialized_players = Player.player_table.all()
+        for serialized_player in serialized_players:
+            Player(
+                surname=serialized_player["surname"],
+                first_name=serialized_player["first_name"],
+                date_of_birth=serialized_player["date_of_birth"],
+                gender=serialized_player["gender"],
+                ranking=serialized_player["ranking"],
+            )
 
     @classmethod
     def find_player_by_identifier(cls, identifier):
@@ -28,16 +46,16 @@ class Player:
     @classmethod
     def dict_to_object(cls, dict_player):
 
-        if 'surname' in dict_player:
-            surname = dict_player['surname']
-        if 'first_name' in dict_player:
-            first_name = dict_player['first_name']
-        if 'date_of_birth' in dict_player:
-            date_of_birth = dict_player['date_of_birth']
-        if 'gender' in dict_player:
-            gender = dict_player['gender']
-        if 'ranking' in dict_player:
-            ranking = dict_player['ranking']
+        if "surname" in dict_player:
+            surname = dict_player["surname"]
+        if "first_name" in dict_player:
+            first_name = dict_player["first_name"]
+        if "date_of_birth" in dict_player:
+            date_of_birth = dict_player["date_of_birth"]
+        if "gender" in dict_player:
+            gender = dict_player["gender"]
+        if "ranking" in dict_player:
+            ranking = dict_player["ranking"]
 
         return Player(surname, first_name, date_of_birth, gender, ranking)
 
@@ -59,6 +77,19 @@ class Player:
     def ranking(self, value):
         self._ranking = value
 
+    def serialized_player(self):
+        serialized_player = {
+            "Identifier": self.identifier,
+            "surname": self.surname,
+            "first_name": self.first_name,
+            "date_of_birth": self.date_of_birth,
+            "gender": self.gender,
+            "ranking": self.ranking,
+        }
+        return serialized_player
+
+    def save(self):
+        Player.player_table.insert(Document(self.serialized_player(), doc_id=self.identifier))
 
     def __repr__(self):
         lines = [
@@ -71,5 +102,3 @@ class Player:
             f"ranking:{self.ranking}",
         ]
         return "\n".join(lines)
-
-

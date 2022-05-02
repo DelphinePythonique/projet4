@@ -1,6 +1,11 @@
 from collections import Counter
-from operator import itemgetter, attrgetter
+from operator import itemgetter
 
+from tinydb import TinyDB
+from tinydb.operations import add, set
+from tinydb.table import Document
+
+from models.match import Match
 from models.player import Player
 from models.round import Round
 
@@ -19,6 +24,45 @@ class Tournament:
     STATE_ROUND_TO_START = "state_round_to_start"
     tournaments = []
     tournaments_counter_for_identifier = 0
+    db = TinyDB("db.json")
+    tournament_table = db.table("tournaments")
+
+    @classmethod
+    def upload_tournaments(self):
+        serialized_tournaments = Tournament.tournament_table.all()
+        for serialized_tournament in serialized_tournaments:
+
+            tournament = Tournament(
+                name=serialized_tournament["name"],
+                place=serialized_tournament["place"],
+                begin_date=serialized_tournament["begin_date"],
+                end_date=serialized_tournament["end_date"],
+                number_of_round=serialized_tournament["number_of_round"],
+                time_control=serialized_tournament["time_control"],
+                description=serialized_tournament["description"],
+                #  state=serialized_tournament["state"],
+            )
+
+            for serialized_player in serialized_tournament["players"]:
+                tournament.players.append(serialized_player)
+
+            for serialized_round in serialized_tournament["rounds"]:
+                round = Round(
+                    name=serialized_round["name"],
+                    tournament=tournament,
+                    number=serialized_round["number"],
+                    begin_date=serialized_round["begin_date"],
+                    end_date=serialized_round["end_date"],
+                )
+                tournament.rounds.append(round)
+                for serialized_match in serialized_round["matchs"]:
+                    match = Match(
+                        round,
+                        serialized_match[0][0],
+                        serialized_match[1][0],
+                        serialized_match[0][1],
+                        serialized_match[1][1],
+                    )
 
     @classmethod
     def dict_to_object(cls, dict_tournament):
@@ -60,6 +104,7 @@ class Tournament:
         :type time_control: str
         """
 
+        self._time_control = time_control
         Tournament.tournaments_counter_for_identifier += 1
         self.identifier = Tournament.tournaments_counter_for_identifier
         self.name = name
@@ -69,11 +114,22 @@ class Tournament:
         self.number_of_round = number_of_round
         self.rounds = []
         self.players = []
-        self.set_time_control(time_control)
+
         self.description = description
         self._state = self.state
 
         Tournament.tournaments.append(self)
+
+    @property
+    def time_control(self):
+        return self._time_control
+
+    @time_control.setter
+    def time_control(self, value):
+        if value in Tournament.TYPE_OF_TIME_CONTROL:
+            self._time_control = value
+        else:
+            self._time_control = Tournament.DEFAULT_TIME_CONTROL
 
     @property
     def state(self):
@@ -105,10 +161,48 @@ class Tournament:
             self._state_round = Tournament.STATE_ROUND_NO
 
         return self._state_round
+
     @property
     def active_round(self):
         in_progress_round, next_round = self.which_in_progress_round_and_next_round()
         return in_progress_round
+
+    def save(self):
+        if Tournament.tournament_table.contains(doc_id=self.identifier):
+            tournament_saved = Tournament.tournament_table.get(doc_id=self.identifier)
+            for player in self.players:
+                if player not in tournament_saved["players"]:
+                    Tournament.tournament_table.update(add("players", [player]), doc_ids=[self.identifier])
+            Tournament.tournament_table.update(set("rounds", []), doc_ids=[self.identifier])
+            for round in self.rounds:
+                Tournament.tournament_table.update(
+                    add("rounds", [round.serialized_round()]), doc_ids=[self.identifier]
+                )
+
+        else:
+            Tournament.tournament_table.insert(Document(self.serialized_tournament(), doc_id=self.identifier))
+
+    def serialized_tournament(self):
+
+        self.rounds = []
+        self.players = []
+
+        serialized_tournament = {
+            "name": self.name,
+            "place": self.place,
+            "begin_date": self.begin_date,
+            "end_date": self.end_date,
+            "number_of_round": self.number_of_round,
+            "time_control": self.time_control,
+            "description": self.description,
+            "state": self.state,
+            "players": [],
+            "rounds": [],
+        }
+        for player in self.players:
+            serialized_tournament["players"].append(player.serialized_player())
+
+        return serialized_tournament
 
     def __str__(self):
         lines = [
@@ -118,17 +212,11 @@ class Tournament:
             f"place:{self.place}",
             f"begin_date:{self.begin_date}",
             f"end_date:{self.end_date}",
-            f"time_control:{self._time_control}",
+            f"time_control:{self.time_control}",
             f"description:{self.description}",
             f"number_of_round:{self.number_of_round}",
         ]
         return "\n".join(lines)
-
-    def set_time_control(self, value):
-        if value in Tournament.TYPE_OF_TIME_CONTROL:
-            self._time_control = value
-        else:
-            self._time_control = Tournament.DEFAULT_TIME_CONTROL
 
     def add_player(self, player):
         if self.state == Tournament.STATE_DRAFT:

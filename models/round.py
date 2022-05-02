@@ -9,12 +9,12 @@ class Round:
     RANKING_PARING_METHOD = 'ranking'
     RESULT_PARING_METHOD = 'result'
 
-    def __init__(self, name, tournament, number):
+    def __init__(self, name, tournament, number, begin_date=None, end_date=None):
         self.name = name
         self.number = number
         self.tournament = tournament
-        self.begin_date = None  # datetime.today()
-        self.end_date = None
+        self.begin_date = begin_date  # datetime.today()
+        self.end_date = end_date
 
     @property
     def state(self):
@@ -64,6 +64,20 @@ class Round:
         for match in self.matchs:
             result_by_player += tuple(match)
         return result_by_player
+    
+    def serialized_round(self):
+
+        serialized_round = {
+            'name': self.name,
+            'number': self.number,
+            'begin_date': self.begin_date,
+            'end_date': self.end_date,
+            'matchs': []
+        }
+        for match_tuple in self.matchs:
+            match = Match.find_match_by_tuple(self, match_tuple)
+            serialized_round['matchs'].append(match.serialized_match_tuple())
+        return serialized_round
 
     def __repr__(self):
         return self.name
