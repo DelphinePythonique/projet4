@@ -1,4 +1,3 @@
-from datetime import datetime
 from models.match import Match
 
 
@@ -21,7 +20,7 @@ class Round:
         if len(self.matchs) == 0:
             self._state = Round.STATE_DRAFT
         elif len(self.matchs) > 0:
-            matchs_start = [match for match in  Match.find_match_by_round(self) if match.state == Match.STATE_START]
+            matchs_start = [match for match in Match.find_match_by_round(self) if match.state == Match.STATE_START]
             if len(matchs_start) > 0:
                 self._state = Round.STATE_START
             else:
@@ -64,7 +63,7 @@ class Round:
         for match in self.matchs:
             result_by_player += tuple(match)
         return result_by_player
-    
+
     def serialized_round(self):
 
         serialized_round = {

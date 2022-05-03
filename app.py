@@ -1,11 +1,6 @@
-from os.path import exists
-
-from tinydb import TinyDB
-
 from models.player import Player
 from models.tournament import Tournament
 from router import Router
-#import fixtures
 
 
 class App:

@@ -53,6 +53,19 @@ Position yourself in the local directory in which you want to position the sourc
 ``` bash
  .\env\Scripts\activate
 ```
+- Install dependencies
+``` bash
+ python install -r requirements.txt
+```
+
+- Install flake8-html to check the quality of the code
+``` bash
+ pip install flake8-html
+```
+- generate the report
+``` bash
+  flake8 --format=html --htmldir=flake-report --exclude=env
+```
 
 ### <a name="use"></a>Uses
 
@@ -152,4 +165,3 @@ The flow is:
 else, an other round can be started 
 
 ######  
-see you soon for the next step

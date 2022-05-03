@@ -1,5 +1,5 @@
-from models.player import Player
 from models.tournament import Tournament
+
 
 class View:
     def __init__(self):
@@ -175,7 +175,7 @@ class View:
             context["tournament"] = tournament
             print("For which match do you want save result?")
             match_number = int(input())
-            context['match'] = tournament.active_round.matchs[match_number-1]
+            context['match'] = tournament.active_round.matchs[match_number - 1]
             print("Enter the result 0: equality, 1: winner is player one, 2: winner is player 2")
             match_result = int(input())
             context['match_result'] = match_result

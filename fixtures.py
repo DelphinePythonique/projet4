@@ -1,5 +1,4 @@
 """ Do list of players"""
-from models.match import Match
 from models.player import Player
 from models.tournament import Tournament
 
@@ -25,4 +24,3 @@ tournament.add_player(player5)
 tournament.add_player(player6)
 tournament.add_player(player7)
 tournament.add_player(player8)
-
