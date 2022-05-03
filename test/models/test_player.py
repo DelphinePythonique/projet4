@@ -19,5 +19,5 @@ class TestModelPlayer(unittest.TestCase):
         self.assertEqual(len(Player.players), 1, "number  of player is ok")
 
     def test_player_set_ranking(self):
-        self.player.set_ranking(10)
+        self.player.ranking = 10
         self.assertEqual(self.player.ranking, 10, "ranking is ok")
