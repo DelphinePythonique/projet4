@@ -27,70 +27,6 @@ class Tournament:
     db = TinyDB("db.json")
     tournament_table = db.table("tournaments")
 
-    @classmethod
-    def upload_tournaments(self):
-        serialized_tournaments = Tournament.tournament_table.all()
-        for serialized_tournament in serialized_tournaments:
-
-            tournament = Tournament(
-                name=serialized_tournament["name"],
-                place=serialized_tournament["place"],
-                begin_date=serialized_tournament["begin_date"],
-                end_date=serialized_tournament["end_date"],
-                number_of_round=serialized_tournament["number_of_round"],
-                time_control=serialized_tournament["time_control"],
-                description=serialized_tournament["description"],
-                #  state=serialized_tournament["state"],
-            )
-
-            for serialized_player in serialized_tournament["players"]:
-                tournament.players.append(serialized_player)
-
-            for serialized_round in serialized_tournament["rounds"]:
-                round = Round(
-                    name=serialized_round["name"],
-                    tournament=tournament,
-                    number=serialized_round["number"],
-                    begin_date=serialized_round["begin_date"],
-                    end_date=serialized_round["end_date"],
-                )
-                tournament.rounds.append(round)
-                for serialized_match in serialized_round["matchs"]:
-                    player1 = Player.find_player_by_identifier(serialized_match[0][0]['Identifier'])
-                    player2 = Player.find_player_by_identifier(serialized_match[1][0]['Identifier'])
-                    Match(
-                        round,
-                        player1,
-                        player2,
-                        serialized_match[0][1],
-                        serialized_match[1][1],
-                    )
-
-    @classmethod
-    def dict_to_object(cls, dict_tournament):
-        if "name" in dict_tournament:
-            name = dict_tournament["name"]
-        if "place" in dict_tournament:
-            place = dict_tournament["place"]
-        if "begin_date" in dict_tournament:
-            begin_date = dict_tournament["begin_date"]
-        if "end_date" in dict_tournament:
-            end_date = dict_tournament["end_date"]
-        if "time_control" in dict_tournament:
-            time_control = dict_tournament["time_control"]
-        if "description" in dict_tournament:
-            description = dict_tournament["description"]
-
-        return Tournament(name, place, begin_date, end_date, time_control, description)
-
-    @classmethod
-    def find_tournament_by_identifier(cls, identifier):
-        tournament_found = None
-        for tournament in cls.tournaments:
-            if tournament.identifier == identifier:
-                tournament_found = tournament
-        return tournament_found
-
     def __init__(
         self,
         name,
@@ -136,38 +72,52 @@ class Tournament:
     @property
     def state(self):
         if len(self.players) < Tournament.GOAL_NUMBER_OF_PLAYERS:
-            self._state = Tournament.STATE_DRAFT
+            state = Tournament.STATE_DRAFT
         elif len(self.players) == Tournament.GOAL_NUMBER_OF_PLAYERS and len(self.rounds) == 0:
-            self._state = Tournament.STATE_READY
+            state = Tournament.STATE_READY
 
         elif len(self.rounds) > 0:
             in_progress_round, next_round = self.which_in_progress_round_and_next_round()
             if in_progress_round or next_round:
-                self._state = Tournament.STATE_IN_PROGRESS
+                state = Tournament.STATE_IN_PROGRESS
             else:
-                self._state = Tournament.STATE_CLOSED
-        return self._state
+                state = Tournament.STATE_CLOSED
+        return state
 
     @property
     def state_round(self):
         if self.state == Tournament.STATE_IN_PROGRESS:
             in_progress_round, next_round = self.which_in_progress_round_and_next_round()
             if in_progress_round:
-                self._state_round = Tournament.STATE_ROUND_STARTED
+                state_round = Tournament.STATE_ROUND_STARTED
             elif next_round:
-                self._state_round = Tournament.STATE_ROUND_TO_START
+                state_round = Tournament.STATE_ROUND_TO_START
             else:
-                self._state_round = Tournament.STATE_ROUND_NO
+                state_round = Tournament.STATE_ROUND_NO
 
         else:
-            self._state_round = Tournament.STATE_ROUND_NO
+            state_round = Tournament.STATE_ROUND_NO
 
-        return self._state_round
+        return state_round
 
     @property
     def active_round(self):
         in_progress_round, next_round = self.which_in_progress_round_and_next_round()
         return in_progress_round
+
+    def __str__(self):
+        lines = [
+            "tournament:",
+            f"Identifier:{self.identifier}",
+            f"name:{self.name}",
+            f"place:{self.place}",
+            f"begin_date:{self.begin_date}",
+            f"end_date:{self.end_date}",
+            f"time_control:{self.time_control}",
+            f"description:{self.description}",
+            f"number_of_round:{self.number_of_round}",
+        ]
+        return "\n".join(lines)
 
     def save(self):
         if Tournament.tournament_table.contains(doc_id=self.identifier):
@@ -205,20 +155,6 @@ class Tournament:
             serialized_tournament["players"].append(player.serialized_player())
 
         return serialized_tournament
-
-    def __str__(self):
-        lines = [
-            "tournament:",
-            f"Identifier:{self.identifier}",
-            f"name:{self.name}",
-            f"place:{self.place}",
-            f"begin_date:{self.begin_date}",
-            f"end_date:{self.end_date}",
-            f"time_control:{self.time_control}",
-            f"description:{self.description}",
-            f"number_of_round:{self.number_of_round}",
-        ]
-        return "\n".join(lines)
 
     def add_player(self, player):
         if self.state == Tournament.STATE_DRAFT:
@@ -288,3 +224,67 @@ class Tournament:
         )
 
         return total_result_of_players_tuple_order_by_result
+
+    @classmethod
+    def upload_tournaments(self):
+        serialized_tournaments = Tournament.tournament_table.all()
+        for serialized_tournament in serialized_tournaments:
+
+            tournament = Tournament(
+                name=serialized_tournament["name"],
+                place=serialized_tournament["place"],
+                begin_date=serialized_tournament["begin_date"],
+                end_date=serialized_tournament["end_date"],
+                number_of_round=serialized_tournament["number_of_round"],
+                time_control=serialized_tournament["time_control"],
+                description=serialized_tournament["description"],
+                #  state=serialized_tournament["state"],
+            )
+
+            for serialized_player in serialized_tournament["players"]:
+                tournament.players.append(serialized_player)
+
+            for serialized_round in serialized_tournament["rounds"]:
+                round = Round(
+                    name=serialized_round["name"],
+                    tournament=tournament,
+                    number=serialized_round["number"],
+                    begin_date=serialized_round["begin_date"],
+                    end_date=serialized_round["end_date"],
+                )
+                tournament.rounds.append(round)
+                for serialized_match in serialized_round["matchs"]:
+                    player1 = Player.find_player_by_identifier(serialized_match[0][0]['Identifier'])
+                    player2 = Player.find_player_by_identifier(serialized_match[1][0]['Identifier'])
+                    Match(
+                        round,
+                        player1,
+                        player2,
+                        serialized_match[0][1],
+                        serialized_match[1][1],
+                    )
+
+    @classmethod
+    def dict_to_object(cls, dict_tournament):
+        if "name" in dict_tournament:
+            name = dict_tournament["name"]
+        if "place" in dict_tournament:
+            place = dict_tournament["place"]
+        if "begin_date" in dict_tournament:
+            begin_date = dict_tournament["begin_date"]
+        if "end_date" in dict_tournament:
+            end_date = dict_tournament["end_date"]
+        if "time_control" in dict_tournament:
+            time_control = dict_tournament["time_control"]
+        if "description" in dict_tournament:
+            description = dict_tournament["description"]
+
+        return Tournament(name, place, begin_date, end_date, time_control, description)
+
+    @classmethod
+    def find_tournament_by_identifier(cls, identifier):
+        tournament_found = None
+        for tournament in cls.tournaments:
+            if tournament.identifier == identifier:
+                tournament_found = tournament
+        return tournament_found

@@ -131,3 +131,6 @@ dmypy.json
 /.isort.cfg
 /pyproject.toml
 
+.idea/
+db.json
+flake-report/
