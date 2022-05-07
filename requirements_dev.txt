@@ -1,0 +1,4 @@
+black==22.3.0
+flake8==4.0.1
+flake8-html==0.4.2
+pytest-cov==3.0.0

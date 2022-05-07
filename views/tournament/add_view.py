@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import router
 from models.tournament import Tournament
 from utils.input_utils import inputs_request
 
@@ -38,5 +39,5 @@ class TournamentAddView():
         }
 
         context = inputs_request(inputs_required, context_key="tournament", context=context)
-        context["route"] = "index_tournaments"
+        context["route"] = router.Router.INDEX_TOURNAMENT
         return context

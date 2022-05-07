@@ -83,7 +83,7 @@ class Player:
 
     @classmethod
     def list_of_players_by_ranking_sort(cls):
-        sorted_by_ranking = sorted(cls.players, key=lambda x: (x.ranking, x.surname), reverse=True)
+        sorted_by_ranking = sorted(cls.players, key=lambda x: (int(x.ranking), x.surname), reverse=True)
         return sorted_by_ranking
         # return sorted(sorted_by_ranking, key=attrgetter('surname'))
 

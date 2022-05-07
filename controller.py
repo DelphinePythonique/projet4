@@ -105,9 +105,9 @@ class Controller:
             tournament = context["tournament"]
             if "match" and "match_result" in context:
                 match = Match.find_match_by_tuple(tournament.active_round, context["match"])
-                if context["match_result"] == 1:
+                if context["match_result"] == "1":
                     match.set_player_one_is_winner()
-                elif context["match_result"] == 2:
+                elif context["match_result"] == "2":
                     match.set_player_two_is_winner()
                 else:
                     match.set_match_equality()
