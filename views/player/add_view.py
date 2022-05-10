@@ -5,7 +5,7 @@ from utils.input_utils import inputs_request
 
 
 class PlayerAddView():
-    def add(self, context):
+    def display(self, context):
         # with view asks for the entry of the information of the new player and return save message with index_player
         inputs_required = {
             "surname": {
@@ -31,5 +31,5 @@ class PlayerAddView():
 
         print("Enter player informations")
         context = inputs_request(inputs_required, context_key="player", context=context)
-        context["route"] = router.Router.INDEX_PLAYER
+        context["route_id"] = router.Router.INDEX_PLAYER_ID
         return context

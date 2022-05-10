@@ -17,6 +17,7 @@ class Round:
 
     @property
     def state(self):
+        state = Round.STATE_DRAFT
         if len(self.matchs) == 0:
             state = Round.STATE_DRAFT
         elif len(self.matchs) > 0:

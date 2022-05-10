@@ -5,8 +5,8 @@ from models.tournament import Tournament
 from utils.input_utils import inputs_request
 
 
-class TournamentAddView():
-    def add(self, context):
+class TournamentAddView:
+    def display(self, context):
         # with view asks for the entry of the information of the new tournament and return save message with index tournament
 
         print("Enter tournament informations")
@@ -30,7 +30,11 @@ class TournamentAddView():
                 "constraints": {"max_nb_car": 200},
             },
             "begin_date": {"question": ["Enter begin date as DD/MM/YYYY"], "type": datetime},
-            "end_date": {"question": ["Enter end date as DD/MM/YYYY"], "type": datetime},
+            "end_date": {
+                "question": ["Enter end date as DD/MM/YYYY"],
+                "type": datetime,
+                "constraints": {">=": "begin_date"},
+            },
             "time_control": {
                 "question": [f"Enter time control among {Tournament.TYPE_OF_TIME_CONTROL}"],
                 "type": str,
@@ -39,5 +43,5 @@ class TournamentAddView():
         }
 
         context = inputs_request(inputs_required, context_key="tournament", context=context)
-        context["route"] = router.Router.INDEX_TOURNAMENT
+        context["route_id"] = router.Router.INDEX_TOURNAMENT_ID
         return context

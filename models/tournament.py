@@ -22,13 +22,13 @@ class Tournament:
     STATE_ROUND_NO = "state_round_no"
     STATE_ROUND_STARTED = "state_round_started"
     STATE_ROUND_TO_START = "state_round_to_start"
-    tournaments = []
-    tournaments_counter_for_identifier = 0
+
     db = TinyDB("db.json")
     tournament_table = db.table("tournaments")
 
     def __init__(
         self,
+        app,
         name,
         place,
         begin_date,
@@ -43,8 +43,9 @@ class Tournament:
         """
 
         self._time_control = time_control
-        Tournament.tournaments_counter_for_identifier += 1
-        self.identifier = Tournament.tournaments_counter_for_identifier
+        self.app = app
+        app.tournaments_counter_for_identifier += 1
+        self.identifier = app.tournaments_counter_for_identifier
         self.name = name
         self.place = place
         self.begin_date = begin_date
@@ -56,7 +57,7 @@ class Tournament:
         self.description = description
         self._state = self.state
 
-        Tournament.tournaments.append(self)
+        app.tournaments.append(self)
 
     @property
     def time_control(self):
@@ -161,7 +162,7 @@ class Tournament:
             if isinstance(player, Player):
                 self.players.append(player.identifier)
             elif isinstance(player, int):
-                if Player.find_player_by_identifier(player):
+                if Player.find_player_by_identifier(self.app, player):
                     self.players.append(player)
 
     def which_in_progress_round_and_next_round(self):
@@ -195,13 +196,13 @@ class Tournament:
 
     def extract_tournament_player_sort_by_ranking(self):
         tournament_players_order_by_ranking = [
-            player for player in Player.list_of_players_by_ranking_sort() if player.identifier in self.players
+            player for player in Player.list_of_players_by_ranking_sort(self.app.players) if player.identifier in self.players
         ]
         return tournament_players_order_by_ranking
 
     def extract_tournament_player_sort_by_alphabetic(self):
         tournament_players_order_by_alphabetic = [
-            player for player in Player.list_of_players_by_alphabetic_sort() if player.identifier in self.players
+            player for player in Player.list_of_players_by_alphabetic_sort(self.app.players) if player.identifier in self.players
         ]
         return tournament_players_order_by_alphabetic
 
@@ -226,11 +227,12 @@ class Tournament:
         return total_result_of_players_tuple_order_by_result
 
     @classmethod
-    def upload_tournaments(self):
+    def upload_tournaments(self, app):
         serialized_tournaments = Tournament.tournament_table.all()
         for serialized_tournament in serialized_tournaments:
 
             tournament = Tournament(
+                app=app,
                 name=serialized_tournament["name"],
                 place=serialized_tournament["place"],
                 begin_date=serialized_tournament["begin_date"],
@@ -254,8 +256,8 @@ class Tournament:
                 )
                 tournament.rounds.append(round)
                 for serialized_match in serialized_round["matchs"]:
-                    player1 = Player.find_player_by_identifier(serialized_match[0][0]['Identifier'])
-                    player2 = Player.find_player_by_identifier(serialized_match[1][0]['Identifier'])
+                    player1 = Player.find_player_by_identifier(app, serialized_match[0][0]['Identifier'])
+                    player2 = Player.find_player_by_identifier(app, serialized_match[1][0]['Identifier'])
                     Match(
                         round,
                         player1,
@@ -265,7 +267,7 @@ class Tournament:
                     )
 
     @classmethod
-    def dict_to_object(cls, dict_tournament):
+    def dict_to_object(cls, app, dict_tournament):
         if "name" in dict_tournament:
             name = dict_tournament["name"]
         if "place" in dict_tournament:
@@ -279,12 +281,12 @@ class Tournament:
         if "description" in dict_tournament:
             description = dict_tournament["description"]
 
-        return Tournament(name, place, begin_date, end_date, time_control, description)
+        return Tournament(app, name, place, begin_date, end_date, time_control, description)
 
     @classmethod
-    def find_tournament_by_identifier(cls, identifier):
+    def find_tournament_by_identifier(cls, app, identifier):
         tournament_found = None
-        for tournament in cls.tournaments:
+        for tournament in app.tournaments:
             if tournament.identifier == identifier:
                 tournament_found = tournament
         return tournament_found

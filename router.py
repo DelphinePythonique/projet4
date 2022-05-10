@@ -12,6 +12,12 @@ class Router:
     ADD_PLAYER_INTO_TOURNAMENT = "add_player_into_tournament"
     START_ROUND = "start_round"
     SAVE_ROUND = "save_round"
+    REPORT_INDEX = "report_index"
+    REPORT_PLAYER = "report_player"
+    REPORT_TOURNAMENT = "report_tournament"
+    REPORT_TOURNAMENT_ROUNDS = "report_tournament_rounds"
+    REPORT_TOURNAMENT_MATCHS = "report_tournament_matchs"
+    REPORT_TOURNAMENT_PLAYERS = "report_tournament_players"
 
     HOMEPAGE_ID = "1"
     INDEX_PLAYER_ID = "2"
@@ -23,9 +29,15 @@ class Router:
     ADD_PLAYER_INTO_TOURNAMENT_ID = "8"
     START_ROUND_ID = "9"
     SAVE_ROUND_ID = "10"
+    REPORT_INDEX_ID = "11"
+    REPORT_PLAYER_ID = "12"
+    REPORT_TOURNAMENT_ID = "13"
+    REPORT_TOURNAMENT_ROUNDS_ID = "14"
+    REPORT_TOURNAMENT_MATCHS_ID = "15"
+    REPORT_TOURNAMENT_PLAYERS_ID = "16"
 
-    def __init__(self):
-        self.controller = Controller()
+    def __init__(self, app):
+        self.controller = Controller(app)
         self.mapping = {
             Router.HOMEPAGE: self.controller.index,
             Router.INDEX_PLAYER: self.controller.index_player,
@@ -37,6 +49,12 @@ class Router:
             Router.ADD_PLAYER_INTO_TOURNAMENT: self.controller.add_player_into_tournament,
             Router.START_ROUND: self.controller.start_round,
             Router.SAVE_ROUND: self.controller.save_round,
+            Router.REPORT_INDEX: self.controller.report_index,
+            Router.REPORT_PLAYER: self.controller.report_player,
+            Router.REPORT_TOURNAMENT: self.controller.report_tournament,
+            Router.REPORT_TOURNAMENT_ROUNDS: self.controller.report_tournament_rounds,
+            Router.REPORT_TOURNAMENT_MATCHS: self.controller.report_tournament_matchs,
+            Router.REPORT_TOURNAMENT_PLAYERS: self.controller.report_tournament_players
         }
 
     def call_controller_method(self, context):

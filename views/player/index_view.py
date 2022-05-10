@@ -1,18 +1,18 @@
 import router
 import views.view as view
-from views.player._utils import _display_players
+from views.player._utils import _format_display_players
 from utils.input_utils import inputs_request
 
 
 class PlayerIndexView():
-    def index(self, context):
+    def display(self, context):
         # Display players and return choice menu between new player , update ranking player, menu index
         players = []
         if "players" in context:
             players = context["players"]
         menu_items = []
         lines = ["Chess tournaments managment - Players", "PLAYERS"]
-        display_player, ids_player = _display_players(players=players)
+        display_player, ids_player = _format_display_players(players=players)
         lines.extend(display_player)
         lines.extend([view.View.SEPARATOR, f"{router.Router.ADD_PLAYER_ID} - Add player"])
         menu_items.append(router.Router.ADD_PLAYER_ID)
@@ -37,12 +37,8 @@ class PlayerIndexView():
         }
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
-
-        if context["choice"]["menu"] == router.Router.ADD_PLAYER_ID:
-            context["route"] = router.Router.ADD_PLAYER
-        elif context["choice"]["menu"] == router.Router.UPDATE_RANKING_PLAYER_ID:
-            context["route"] = router.Router.UPDATE_RANKING_PLAYER
-
+        context["route_id"] = context["choice"]["menu"]
+        if context["route_id"] == router.Router.UPDATE_RANKING_PLAYER_ID:
             inputs_required = {
                 "player_identifier": {
                     "question": ["Enter player identifier"],
@@ -54,6 +50,5 @@ class PlayerIndexView():
 
             context = inputs_request(inputs_required, context_key="choice", context=context)
             context["player_id"] = context["choice"]["player_identifier"]
-        else:
-            context["route"] = router.Router.HOMEPAGE
+
         return context

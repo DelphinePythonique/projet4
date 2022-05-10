@@ -6,9 +6,13 @@ from router import Router
 class App:
 
     def __init__(self):
-        self.router = Router()
-        Player.upload_players()
-        Tournament.upload_tournaments()
+        self.router = Router(self)
+        self.players = []
+        self.players_counter_for_identifier = 0
+        self.tournaments = []
+        self.tournaments_counter_for_identifier = 0
+        Player.upload_players(self)
+        Tournament.upload_tournaments(self)
 
 
 if __name__ == "__main__":

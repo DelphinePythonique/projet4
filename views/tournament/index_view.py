@@ -1,10 +1,11 @@
 import views.view as view
 import router
 from utils.input_utils import inputs_request
+from views.tournament._utils import _format_display_tournaments
 
 
 class TournamentIndexView:
-    def index(self, context):
+    def display(self, context):
         tournaments = []
         ids_tournaments = []
         menu_items = [router.Router.ADD_TOURNAMENT_ID]
@@ -14,9 +15,8 @@ class TournamentIndexView:
         # Display players and return choice menu between new player , update ranking player, menu index
 
         lines = ["Chess tournaments managment - Tournament", view.View.SEPARATOR, "Tournaments"]
-        for tournament in tournaments:
-            lines.append(f"{tournament.identifier}:{tournament.name} ({tournament.state})")
-            ids_tournaments.append(str(tournament.identifier))
+        tournament_lines, ids_tournaments = _format_display_tournaments(tournaments)
+        lines.extend(tournament_lines)
         lines.extend([view.View.SEPARATOR, f"{router.Router.ADD_TOURNAMENT_ID} - Add Tournament"])
         if len(tournaments) > 0:
             lines.extend(
@@ -41,11 +41,8 @@ class TournamentIndexView:
         }
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
-
-        if context["choice"]["menu"] == router.Router.ADD_TOURNAMENT_ID:
-            context = {"route": router.Router.ADD_TOURNAMENT}
-        elif context["choice"]["menu"] == router.Router.DISPLAY_TOURNAMENT_ID:
-            context["route"] = router.Router.DISPLAY_TOURNAMENT
+        context["route_id"] = context["choice"]["menu"]
+        if context["route_id"] == router.Router.DISPLAY_TOURNAMENT_ID:
             inputs_required = {
                 "tournament_identifier": {
                     "question": ["Enter tournament identifier"],
@@ -58,6 +55,4 @@ class TournamentIndexView:
             context = inputs_request(inputs_required, context_key="choice", context=context)
             context["tournament_id"] = context["choice"]["tournament_identifier"]
 
-        else:
-            context["route"] = router.Router.HOMEPAGE_ID
         return context
