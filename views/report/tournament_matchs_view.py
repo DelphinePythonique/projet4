@@ -1,10 +1,27 @@
-import router
+from typing import TYPE_CHECKING
+
+
 from utils.input_utils import inputs_request
-from views import view
+
 from views.tournament._utils import _format_matchs
+
+if TYPE_CHECKING:
+    from views.view import View
 
 
 class ReportTournamentMatchsView:
+
+    def __init__(self, view: "View"):
+        self._view = view
+
+    @property
+    def view(self):
+        return self._view
+
+    @property
+    def router(self):
+        return self._view.router
+
     def display(self, context):
         tournament = context["tournament"]
         lines = [
@@ -12,10 +29,10 @@ class ReportTournamentMatchsView:
         ]
 
         lines.extend([
-            view.View.SEPARATOR,
-            f"{router.Router.REPORT_INDEX_ID} - Menu Report",
-            f"{router.Router.REPORT_TOURNAMENT_ID} - Report Tournament",
-            view.View.SEPARATOR,
+            self.view.SEPARATOR,
+            f"{self.router.REPORT_INDEX_ID} - Menu Report",
+            f"{self.router.REPORT_TOURNAMENT_ID} - Report Tournament",
+            self.view.SEPARATOR,
             "Enter the number of the action to be perform and press enter",
         ])
         for round_ in tournament.rounds:
@@ -28,7 +45,7 @@ class ReportTournamentMatchsView:
                 "question": lines,
                 "type": str,
                 "not_null": True,
-                "constraints": {"choice_ids": [router.Router.REPORT_INDEX_ID, router.Router.REPORT_TOURNAMENT_ID]},
+                "constraints": {"choice_ids": [self.router.REPORT_INDEX_ID, self.router.REPORT_TOURNAMENT_ID]},
             },
         }
 

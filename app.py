@@ -18,6 +18,6 @@ class App:
 if __name__ == "__main__":
 
     app = App()
-    context = {'route': Router.HOMEPAGE}
-    while 'route' in context:
+    context = {'route_id': app.router.HOMEPAGE_ID}
+    while 'route_id' in context:
         context = app.router.call_controller_method(context)

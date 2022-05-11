@@ -1,5 +1,10 @@
+from typing import TYPE_CHECKING
+
 from tinydb import TinyDB
 from tinydb.table import Document
+
+if TYPE_CHECKING:
+    from app import App
 
 
 class Player:
@@ -7,7 +12,7 @@ class Player:
     db = TinyDB("db.json")
     player_table = db.table("players")
 
-    def __init__(self, app, surname, first_name, date_of_birth, gender, ranking=None):
+    def __init__(self, app: "App", surname, first_name, date_of_birth, gender, ranking=None):
 
         app.players_counter_for_identifier += 1
         self.identifier = app.players_counter_for_identifier
@@ -40,7 +45,7 @@ class Player:
 
     def save(self):
         if Player.player_table.contains(doc_id=self.identifier):
-            Player.player_table.update({"ranking":self.ranking}, doc_ids=[self.identifier])
+            Player.player_table.update({"ranking": self.ranking}, doc_ids=[self.identifier])
         else:
             Player.player_table.insert(Document(self.serialized_player(), doc_id=self.identifier))
 

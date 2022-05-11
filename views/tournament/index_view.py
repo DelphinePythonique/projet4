@@ -1,33 +1,48 @@
-import views.view as view
-import router
+from typing import TYPE_CHECKING
+
 from utils.input_utils import inputs_request
 from views.tournament._utils import _format_display_tournaments
 
+if TYPE_CHECKING:
+    from views.view import View
+
 
 class TournamentIndexView:
+
+    def __init__(self, view: "View"):
+        self._view = view
+
+    @property
+    def view(self):
+        return self._view
+
+    @property
+    def router(self):
+        return self._view.router
+
     def display(self, context):
         tournaments = []
         ids_tournaments = []
-        menu_items = [router.Router.ADD_TOURNAMENT_ID]
+        menu_items = [self.router.ADD_TOURNAMENT_ID]
         if "tournaments" in context:
             tournaments = context["tournaments"]
         # Display tournaments and return choice menu between new tournament, display tournament, menu index
         # Display players and return choice menu between new player , update ranking player, menu index
 
-        lines = ["Chess tournaments managment - Tournament", view.View.SEPARATOR, "Tournaments"]
+        lines = ["Chess tournaments managment - Tournament", self.view.SEPARATOR, "Tournaments"]
         tournament_lines, ids_tournaments = _format_display_tournaments(tournaments)
         lines.extend(tournament_lines)
-        lines.extend([view.View.SEPARATOR, f"{router.Router.ADD_TOURNAMENT_ID} - Add Tournament"])
+        lines.extend([self.view.SEPARATOR, f"{self.router.ADD_TOURNAMENT_ID} - Add Tournament"])
         if len(tournaments) > 0:
             lines.extend(
                 [
-                    f"{router.Router.DISPLAY_TOURNAMENT_ID} - Display tournament",
-                    f"{router.Router.HOMEPAGE_ID} - Homepage",
-                    view.View.SEPARATOR,
+                    f"{self.router.DISPLAY_TOURNAMENT_ID} - Display tournament",
+                    f"{self.router.HOMEPAGE_ID} - Homepage",
+                    self.view.SEPARATOR,
 
                 ]
             )
-            menu_items.extend([router.Router.DISPLAY_TOURNAMENT_ID, router.Router.HOMEPAGE_ID])
+            menu_items.extend([self.router.DISPLAY_TOURNAMENT_ID, self.router.HOMEPAGE_ID])
 
         lines.append("Enter the number of the action to be perform and press enter")
 
@@ -42,7 +57,7 @@ class TournamentIndexView:
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
         context["route_id"] = context["choice"]["menu"]
-        if context["route_id"] == router.Router.DISPLAY_TOURNAMENT_ID:
+        if context["route_id"] == self.router.DISPLAY_TOURNAMENT_ID:
             inputs_required = {
                 "tournament_identifier": {
                     "question": ["Enter tournament identifier"],

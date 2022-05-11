@@ -1,20 +1,49 @@
-import router
+from typing import TYPE_CHECKING
+
+
 from utils.input_utils import inputs_request
+from views.player._utils import _format_display_players
+
+if TYPE_CHECKING:
+    from views.view import View
 
 
 class ReportTournamentPlayersView:
+
+    def __init__(self, view: "View"):
+        self._view = view
+
+    @property
+    def view(self):
+        return self._view
+
+    @property
+    def router(self):
+        return self._view.router
+
     def display(self, context):
+        tournament = context["tournament"]
+        tournament_players = context['tournament_players']
         lines = [
-            "Chess tournaments managment",
-            f"{router.Router.HOMEPAGE_ID} - Homepage",
-            "Enter the number of the action to be perform and press enter",
+            f"Chess tournaments managment - Rounds of tournament {tournament.name}",
         ]
+
+        lines_players, ids_players = _format_display_players(tournament_players)
+        lines.extend(lines_players)
+        lines.extend([
+            self.view.SEPARATOR,
+            f"{self.router.REPORT_INDEX_ID} - Menu Report",
+            f"{self.router.REPORT_TOURNAMENT_ID} - Report Tournament",
+            self.view.SEPARATOR,
+            "Enter the number of the action to be perform and press enter",
+        ])
+
         inputs_required = {
             "menu": {
                 "question": lines,
                 "type": str,
                 "not_null": True,
-                "constraints": {"choice_ids": [router.Router.HOMEPAGE_ID]},
+                "constraints": {"choice_ids": [self.router.REPORT_INDEX_ID, self.router.REPORT_TOURNAMENT_ID]},
             },
         }
 

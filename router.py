@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
 from controller import Controller
 
+if TYPE_CHECKING:
+
+    from app import App
 
 class Router:
+    """
     HOMEPAGE = "index"
     INDEX_PLAYER = "index_players"
     INDEX_TOURNAMENT = "index_tournaments"
@@ -18,7 +23,7 @@ class Router:
     REPORT_TOURNAMENT_ROUNDS = "report_tournament_rounds"
     REPORT_TOURNAMENT_MATCHS = "report_tournament_matchs"
     REPORT_TOURNAMENT_PLAYERS = "report_tournament_players"
-
+"""
     HOMEPAGE_ID = "1"
     INDEX_PLAYER_ID = "2"
     INDEX_TOURNAMENT_ID = "3"
@@ -36,32 +41,41 @@ class Router:
     REPORT_TOURNAMENT_MATCHS_ID = "15"
     REPORT_TOURNAMENT_PLAYERS_ID = "16"
 
-    def __init__(self, app):
-        self.controller = Controller(app)
-        self.mapping = {
-            Router.HOMEPAGE: self.controller.index,
-            Router.INDEX_PLAYER: self.controller.index_player,
-            Router.INDEX_TOURNAMENT: self.controller.index_tournament,
-            Router.ADD_PLAYER: self.controller.add_player,
-            Router.UPDATE_RANKING_PLAYER: self.controller.update_ranking_player,
-            Router.ADD_TOURNAMENT: self.controller.add_tournament,
-            Router.DISPLAY_TOURNAMENT: self.controller.display_tournament,
-            Router.ADD_PLAYER_INTO_TOURNAMENT: self.controller.add_player_into_tournament,
-            Router.START_ROUND: self.controller.start_round,
-            Router.SAVE_ROUND: self.controller.save_round,
-            Router.REPORT_INDEX: self.controller.report_index,
-            Router.REPORT_PLAYER: self.controller.report_player,
-            Router.REPORT_TOURNAMENT: self.controller.report_tournament,
-            Router.REPORT_TOURNAMENT_ROUNDS: self.controller.report_tournament_rounds,
-            Router.REPORT_TOURNAMENT_MATCHS: self.controller.report_tournament_matchs,
-            Router.REPORT_TOURNAMENT_PLAYERS: self.controller.report_tournament_players
+    def __init__(self, app: "App"):
+        self._app = app
+        self._controller = Controller(self)
+        self.mapping_route_to_controller = {
+            self.HOMEPAGE_ID: self.controller.index,
+            self.INDEX_PLAYER_ID: self.controller.index_player,
+            self.INDEX_TOURNAMENT_ID: self.controller.index_tournament,
+            self.ADD_PLAYER_ID: self.controller.add_player,
+            self.UPDATE_RANKING_PLAYER_ID: self.controller.update_ranking_player,
+            self.ADD_TOURNAMENT_ID: self.controller.add_tournament,
+            self.DISPLAY_TOURNAMENT_ID: self.controller.display_tournament,
+            self.ADD_PLAYER_INTO_TOURNAMENT_ID: self.controller.add_player_into_tournament,
+            self.START_ROUND_ID: self.controller.start_round,
+            self.SAVE_ROUND_ID: self.controller.save_round,
+            self.REPORT_INDEX_ID: self.controller.report_index,
+            self.REPORT_PLAYER_ID: self.controller.report_player,
+            self.REPORT_TOURNAMENT_ID: self.controller.report_tournament,
+            self.REPORT_TOURNAMENT_ROUNDS_ID: self.controller.report_tournament_rounds,
+            self.REPORT_TOURNAMENT_MATCHS_ID: self.controller.report_tournament_matchs,
+            self.REPORT_TOURNAMENT_PLAYERS_ID: self.controller.report_tournament_players
         }
+
+    @property
+    def app(self):
+        return self._app
+
+    @property
+    def controller(self):
+        return self._controller
 
     def call_controller_method(self, context):
 
-        if "route" in context:
-            if context["route"] in self.mapping.keys():
-                context = self.mapping[context["route"]](context)
+        if "route_id" in context:
+            if context["route_id"] in self.mapping_route_to_controller.keys():
+                context = self.mapping_route_to_controller[context["route_id"]](context)
 
         return context
 

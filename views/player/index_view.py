@@ -1,10 +1,24 @@
-import router
-import views.view as view
+from typing import TYPE_CHECKING
+
 from views.player._utils import _format_display_players
 from utils.input_utils import inputs_request
+if TYPE_CHECKING:
+    from views.view import View
 
 
-class PlayerIndexView():
+class PlayerIndexView:
+
+    def __init__(self, view: "View"):
+        self._view = view
+
+    @property
+    def view(self):
+        return self._view
+
+    @property
+    def router(self):
+        return self._view.router
+
     def display(self, context):
         # Display players and return choice menu between new player , update ranking player, menu index
         players = []
@@ -14,17 +28,17 @@ class PlayerIndexView():
         lines = ["Chess tournaments managment - Players", "PLAYERS"]
         display_player, ids_player = _format_display_players(players=players)
         lines.extend(display_player)
-        lines.extend([view.View.SEPARATOR, f"{router.Router.ADD_PLAYER_ID} - Add player"])
-        menu_items.append(router.Router.ADD_PLAYER_ID)
+        lines.extend([self.view.SEPARATOR, f"{self.router.ADD_PLAYER_ID} - Add player"])
+        menu_items.append(self.router.ADD_PLAYER_ID)
         if len(players) > 0:
             lines.extend(
                 [
-                    f"{router.Router.UPDATE_RANKING_PLAYER_ID} - Update Ranking",
-                    f"{router.Router.HOMEPAGE_ID} - Homepage",
-                    view.View.SEPARATOR,
+                    f"{self.router.UPDATE_RANKING_PLAYER_ID} - Update Ranking",
+                    f"{self.router.HOMEPAGE_ID} - Homepage",
+                    self.view.SEPARATOR,
                 ]
             )
-            menu_items.extend([router.Router.UPDATE_RANKING_PLAYER_ID, router.Router.HOMEPAGE_ID])
+            menu_items.extend([self.router.UPDATE_RANKING_PLAYER_ID, self.router.HOMEPAGE_ID])
 
         lines.append("Enter the number of the action to be perform and press enter")
         inputs_required = {
@@ -38,7 +52,7 @@ class PlayerIndexView():
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
         context["route_id"] = context["choice"]["menu"]
-        if context["route_id"] == router.Router.UPDATE_RANKING_PLAYER_ID:
+        if context["route_id"] == self.router.UPDATE_RANKING_PLAYER_ID:
             inputs_required = {
                 "player_identifier": {
                     "question": ["Enter player identifier"],

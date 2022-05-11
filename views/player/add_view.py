@@ -1,10 +1,25 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-import router
 from utils.input_utils import inputs_request
 
+if TYPE_CHECKING:
+    from views.view import View
 
-class PlayerAddView():
+
+class PlayerAddView:
+
+    def __init__(self, view: "View"):
+        self._view = view
+
+    @property
+    def view(self):
+        return self._view
+
+    @property
+    def router(self):
+        return self._view.router
+
     def display(self, context):
         # with view asks for the entry of the information of the new player and return save message with index_player
         inputs_required = {
@@ -31,5 +46,5 @@ class PlayerAddView():
 
         print("Enter player informations")
         context = inputs_request(inputs_required, context_key="player", context=context)
-        context["route_id"] = router.Router.INDEX_PLAYER_ID
+        context["route_id"] = self.router.INDEX_PLAYER_ID
         return context

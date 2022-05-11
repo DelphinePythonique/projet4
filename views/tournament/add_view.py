@@ -1,11 +1,26 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-import router
 from models.tournament import Tournament
 from utils.input_utils import inputs_request
 
+if TYPE_CHECKING:
+    from views.view import View
+
 
 class TournamentAddView:
+
+    def __init__(self, view: "View"):
+        self._view = view
+
+    @property
+    def view(self):
+        return self._view
+
+    @property
+    def router(self):
+        return self._view.router
+
     def display(self, context):
         # with view asks for the entry of the information of the new tournament and return save message with index tournament
 
@@ -43,5 +58,5 @@ class TournamentAddView:
         }
 
         context = inputs_request(inputs_required, context_key="tournament", context=context)
-        context["route_id"] = router.Router.INDEX_TOURNAMENT_ID
+        context["route_id"] = self.router.INDEX_TOURNAMENT_ID
         return context

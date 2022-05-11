@@ -1,14 +1,26 @@
+from typing import TYPE_CHECKING
+
 from models.match import Match
 from models.player import Player
 from models.tournament import Tournament
 from views.view import View
-import router
+
+if TYPE_CHECKING:
+    from router import Router
 
 
 class Controller:
-    def __init__(self, app):
-        self.app = app
-        self.view = View()
+    def __init__(self, router: "Router"):
+        self._router = router
+        self.view = View(self)
+
+    @property
+    def router(self):
+        return self._router
+
+    @property
+    def app(self):
+        return self._router.app
 
     def index(self, context):
         # Display menu #1 and return choice menu between player index or Tournament index
@@ -96,7 +108,7 @@ class Controller:
                         tournament.add_player(int(player_id))
                         tournament.save()
         else:
-            context["route"] = router.Router.HOMEPAGE
+            context["route"] = self.router.HOMEPAGE_ID
         return context
 
     def start_round(self, context):
@@ -104,7 +116,7 @@ class Controller:
             tournament = context["tournament"]
             tournament.start_round()
             tournament.save()
-        context["route"] = router.Router.DISPLAY_TOURNAMENT
+        context["route"] = self.router.DISPLAY_TOURNAMENT_ID
         return context
 
     def save_round(self, context):
@@ -119,7 +131,7 @@ class Controller:
                 else:
                     match.set_match_equality()
             tournament.save()
-        context["route"] = router.Router.DISPLAY_TOURNAMENT
+        context["route"] = self.router.DISPLAY_TOURNAMENT_ID
         return context
 
     def report_index(self, context):
@@ -158,5 +170,9 @@ class Controller:
         context["tournament_players"] = []
         for player_id in context["tournament"].players:
             context["tournament_players"].append(Player.find_player_by_identifier(self.app, player_id))
+        if context["sorted_by"] == 'surname':
+            context["tournament_players"] = Player.list_of_players_by_alphabetic_sort(context["tournament_players"])
+        else:
+            context["tournament_players"] = Player.list_of_players_by_ranking_sort(context["tournament_players"])
         context = self.view.render_view(context)
         return context

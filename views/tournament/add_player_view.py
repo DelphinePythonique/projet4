@@ -1,13 +1,29 @@
-import router
+from typing import TYPE_CHECKING
+
 from utils.input_utils import inputs_request
 from views.player._utils import _format_display_players
 
+if TYPE_CHECKING:
+    from views.view import View
+
 
 class TournamentAddPlayer:
+
+    def __init__(self, view: "View"):
+        self._view = view
+
+    @property
+    def view(self):
+        return self._view
+
+    @property
+    def router(self):
+        return self._view.router
+
     def display(self, context):
         if "tournament" in context:
             tournament = context["tournament"]
-            context["route_id"] = router.Router.DISPLAY_TOURNAMENT_ID
+            context["route_id"] = self.router.DISPLAY_TOURNAMENT_ID
             if "players" in context:
                 players = context["players"]
 
@@ -29,5 +45,5 @@ class TournamentAddPlayer:
                 context["tournament"] = tournament
                 context["tournament_id"] = tournament.identifier
         else:
-            context["route_id"] = router.Router.INDEX_TOURNAMENT_ID
+            context["route_id"] = self.router.INDEX_TOURNAMENT_ID
         return context
