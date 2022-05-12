@@ -3,13 +3,15 @@
 ## Goals: 
 Ultimately, our goal will be to manage chess tournament
 
-version: 0.0.9
+version: 0.0.10
 
 ## Summary
 
 [Install](#install)
 
 [Use](#use)
+
+[contribute](contribute.md)
 
 [Todo](TODO.md)
 
