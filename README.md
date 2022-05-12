@@ -11,7 +11,7 @@ version: 0.0.10
 
 [Use](#use)
 
-[contribute](contribute.md)
+[Contribute](contribute.md)
 
 [Todo](TODO.md)
 
