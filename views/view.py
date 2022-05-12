@@ -56,6 +56,8 @@ class View:
 
         if "route_id" in context:
             if context["route_id"] in self.mapping_route_to_method:
-                context = self.mapping_route_to_method[context["route_id"]](context)
+                route_id = context["route_id"]
+                context.pop("route_id")
+                context = self.mapping_route_to_method[route_id](context)
 
         return context

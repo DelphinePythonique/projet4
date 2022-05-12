@@ -52,6 +52,7 @@ class PlayerIndexView:
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
         context["route_id"] = context["choice"]["menu"]
+        context.pop('choice')
         if context["route_id"] == self.router.UPDATE_RANKING_PLAYER_ID:
             inputs_required = {
                 "player_identifier": {
@@ -64,5 +65,5 @@ class PlayerIndexView:
 
             context = inputs_request(inputs_required, context_key="choice", context=context)
             context["player_id"] = context["choice"]["player_identifier"]
-
+            context.pop("choice")
         return context

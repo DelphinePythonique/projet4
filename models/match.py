@@ -28,7 +28,7 @@ class Match:
     @property
     def tuple(self):
         return [(self.player1, self.result_player1), (self.player2, self.result_player2)]
-    
+
     def serialized_match_tuple(self):
         serialized_match = [
             (self.player1.serialized_player(), self.result_player1),

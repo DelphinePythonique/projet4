@@ -1,13 +1,16 @@
 from collections import Counter
 from operator import itemgetter
+from typing import TYPE_CHECKING
 
-from tinydb import TinyDB
 from tinydb.operations import add, set
 from tinydb.table import Document
 
 from models.match import Match
 from models.player import Player
 from models.round import Round
+
+if TYPE_CHECKING:
+    from app import App
 
 
 class Tournament:
@@ -23,12 +26,9 @@ class Tournament:
     STATE_ROUND_STARTED = "state_round_started"
     STATE_ROUND_TO_START = "state_round_to_start"
 
-    db = TinyDB("db.json")
-    tournament_table = db.table("tournaments")
-
     def __init__(
         self,
-        app,
+        app: "App",
         name,
         place,
         begin_date,
@@ -43,8 +43,8 @@ class Tournament:
         """
 
         self._time_control = time_control
-        self.app = app
-        app.tournaments_counter_for_identifier += 1
+        self._app = app
+        self.app.tournaments_counter_for_identifier += 1
         self.identifier = app.tournaments_counter_for_identifier
         self.name = name
         self.place = place
@@ -58,6 +58,10 @@ class Tournament:
         self._state = self.state
 
         app.tournaments.append(self)
+
+    @property
+    def app(self):
+        return self._app
 
     @property
     def time_control(self):
@@ -121,19 +125,19 @@ class Tournament:
         return "\n".join(lines)
 
     def save(self):
-        if Tournament.tournament_table.contains(doc_id=self.identifier):
-            tournament_saved = Tournament.tournament_table.get(doc_id=self.identifier)
+        if self.app.tournament_table.contains(doc_id=self.identifier):
+            tournament_saved = self.app.tournament_table.get(doc_id=self.identifier)
             for player in self.players:
                 if player not in tournament_saved["players"]:
-                    Tournament.tournament_table.update(add("players", [player]), doc_ids=[self.identifier])
-            Tournament.tournament_table.update(set("rounds", []), doc_ids=[self.identifier])
+                    self.app.tournament_table.update(add("players", [player]), doc_ids=[self.identifier])
+            self.app.tournament_table.update(set("rounds", []), doc_ids=[self.identifier])
             for round in self.rounds:
-                Tournament.tournament_table.update(
+                self.app.tournament_table.update(
                     add("rounds", [round.serialized_round()]), doc_ids=[self.identifier]
                 )
 
         else:
-            Tournament.tournament_table.insert(Document(self.serialized_tournament(), doc_id=self.identifier))
+            self.app.tournament_table.insert(Document(self.serialized_tournament(), doc_id=self.identifier))
 
     def serialized_tournament(self):
 
@@ -228,7 +232,7 @@ class Tournament:
 
     @classmethod
     def upload_tournaments(self, app):
-        serialized_tournaments = Tournament.tournament_table.all()
+        serialized_tournaments = app.tournament_table.all()
         for serialized_tournament in serialized_tournaments:
 
             tournament = Tournament(

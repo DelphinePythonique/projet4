@@ -42,6 +42,7 @@ class ReportIndexView:
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
         context["route_id"] = context["choice"]["menu"]
+        context.pop("choice")
         if context["route_id"] == self.router.REPORT_PLAYER_ID:
             inputs_required = {
                 "sorted_by": {
@@ -56,4 +57,5 @@ class ReportIndexView:
                 context['sorted_by'] = 'surname'
             else:
                 context['sorted_by'] = 'ranking'
+            context.pop("question")
         return context

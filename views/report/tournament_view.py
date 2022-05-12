@@ -32,6 +32,7 @@ class ReportTournamentView:
 
         if "tournaments" in context:
             tournaments = context["tournaments"]
+            context.pop("tournaments")
             lines_tournaments, ids_tournaments = _format_display_tournaments(tournaments)
             lines.extend(lines_tournaments)
         lines.append(self.view.SEPARATOR)
@@ -56,6 +57,7 @@ class ReportTournamentView:
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
         context["route_id"] = context["choice"]["menu"]
+        context.pop("choice")
 
         if context["route_id"] in (
             self.router.REPORT_TOURNAMENT_ROUNDS_ID,
@@ -73,6 +75,7 @@ class ReportTournamentView:
 
             context = inputs_request(inputs_required, context_key="question", context=context)
             context['tournament_id'] = context['question']['tournament_id']
+            context.pop("question")
         if context["route_id"] == self.router.REPORT_TOURNAMENT_PLAYERS_ID:
             inputs_required = {
                 "sorted_by": {
@@ -87,4 +90,5 @@ class ReportTournamentView:
                 context['sorted_by'] = 'surname'
             else:
                 context['sorted_by'] = 'ranking'
+            context.pop("question")
         return context

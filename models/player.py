@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-from tinydb import TinyDB
 from tinydb.table import Document
 
 if TYPE_CHECKING:
@@ -9,12 +8,10 @@ if TYPE_CHECKING:
 
 class Player:
 
-    db = TinyDB("db.json")
-    player_table = db.table("players")
-
     def __init__(self, app: "App", surname, first_name, date_of_birth, gender, ranking=None):
 
-        app.players_counter_for_identifier += 1
+        self._app = app
+        self.app.players_counter_for_identifier += 1
         self.identifier = app.players_counter_for_identifier
         self.surname = surname
         self.first_name = first_name
@@ -22,7 +19,11 @@ class Player:
         self.gender = gender
         self.ranking = ranking
 
-        app.players.append(self)
+        self.app.players.append(self)
+
+    @property
+    def app(self):
+        return self._app
 
     @property
     def ranking(self):
@@ -44,10 +45,10 @@ class Player:
         return serialized_player
 
     def save(self):
-        if Player.player_table.contains(doc_id=self.identifier):
-            Player.player_table.update({"ranking": self.ranking}, doc_ids=[self.identifier])
+        if self.app.player_table.contains(doc_id=self.identifier):
+            self.app.player_table.update({"ranking": self.ranking}, doc_ids=[self.identifier])
         else:
-            Player.player_table.insert(Document(self.serialized_player(), doc_id=self.identifier))
+            self.app.player_table.insert(Document(self.serialized_player(), doc_id=self.identifier))
 
     def __repr__(self):
         lines = [
@@ -62,8 +63,8 @@ class Player:
         return "\n".join(lines)
 
     @classmethod
-    def upload_players(self, app):
-        serialized_players = Player.player_table.all()
+    def upload_players(cls, app):
+        serialized_players = app.player_table.all()
         for serialized_player in serialized_players:
             Player(
                 app=app,
@@ -95,7 +96,6 @@ class Player:
     def list_of_players_by_ranking_sort(cls, players):
         sorted_by_ranking = sorted(players, key=lambda x: (int(x.ranking), x.surname), reverse=False)
         return sorted_by_ranking
-        # return sorted(sorted_by_ranking, key=attrgetter('surname'))
 
     @classmethod
     def dict_to_object(cls, app, dict_player):

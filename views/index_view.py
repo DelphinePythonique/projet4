@@ -43,5 +43,6 @@ class AppView:
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
         context["route_id"] = context["choice"]["menu"]
+        context.pop("choice")
 
         return context

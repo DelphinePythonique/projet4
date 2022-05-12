@@ -23,7 +23,9 @@ class ReportTournamentPlayersView:
 
     def display(self, context):
         tournament = context["tournament"]
+        context.pop('tournament')
         tournament_players = context['tournament_players']
+        context.pop("tournament_players")
         lines = [
             f"Chess tournaments managment - Rounds of tournament {tournament.name}",
         ]
@@ -49,4 +51,5 @@ class ReportTournamentPlayersView:
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
         context["route_id"] = context["choice"]["menu"]
+        context.pop("choice")
         return context

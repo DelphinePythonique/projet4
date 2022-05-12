@@ -34,7 +34,7 @@ def check_constraints(constraints_dict, input_value):
                 return False, f"This value must respect format {value_constraint}"
         if "choice_ids" == constraint:
             if not check_in(input_value, value_constraint):
-                return False, f"This value is not in the list"
+                return False, "This value is not in the list"
 
     return True, input_value
 
@@ -67,6 +67,7 @@ def check_type(value, type_):
         return False, typed_value
 
     return True, typed_value
+
 
 def check_max_nb_car(value, max_):
     try:

@@ -58,5 +58,6 @@ class TournamentAddView:
         }
 
         context = inputs_request(inputs_required, context_key="tournament", context=context)
+
         context["route_id"] = self.router.INDEX_TOURNAMENT_ID
         return context

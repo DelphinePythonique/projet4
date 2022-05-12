@@ -22,10 +22,10 @@ class TournamentIndexView:
 
     def display(self, context):
         tournaments = []
-        ids_tournaments = []
         menu_items = [self.router.ADD_TOURNAMENT_ID]
         if "tournaments" in context:
             tournaments = context["tournaments"]
+            context.pop('tournaments')
         # Display tournaments and return choice menu between new tournament, display tournament, menu index
         # Display players and return choice menu between new player , update ranking player, menu index
 
@@ -57,6 +57,7 @@ class TournamentIndexView:
 
         context = inputs_request(inputs_required, context_key="choice", context=context)
         context["route_id"] = context["choice"]["menu"]
+        context.pop("choice")
         if context["route_id"] == self.router.DISPLAY_TOURNAMENT_ID:
             inputs_required = {
                 "tournament_identifier": {
@@ -69,5 +70,6 @@ class TournamentIndexView:
 
             context = inputs_request(inputs_required, context_key="choice", context=context)
             context["tournament_id"] = context["choice"]["tournament_identifier"]
+            context.pop('choice')
 
         return context

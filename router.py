@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
     from app import App
 
+
 class Router:
     """
     HOMEPAGE = "index"
@@ -78,4 +79,3 @@ class Router:
                 context = self.mapping_route_to_controller[context["route_id"]](context)
 
         return context
-

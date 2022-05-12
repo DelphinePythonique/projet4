@@ -42,21 +42,20 @@ class Controller:
         if "player" in context:
             player = Player.dict_to_object(self.app, context["player"])
             player.save()
-            context["player"] = player
+            context.pop("player")
+
         return context
 
     def update_ranking_player(self, context):
         # with view asks for the new ranking of the player and return save message with index_player
-        if "choice" in context:
-            if "player_identifier" in context["choice"]:
-                context["player"] = Player.find_player_by_identifier(self.app, int(context["choice"]["player_identifier"]))
-            else:
-                context = {}
-                self.index_player(context)
+        if "player_id" in context:
+            context["player"] = Player.find_player_by_identifier(self.app, int(context["player_id"]))
+
         context = self.view.render_view(context)
         if "player" in context:
             player = context["player"]
             player.save()
+            context.pop('player')
 
         return context
 
@@ -73,14 +72,15 @@ class Controller:
         context = self.view.render_view(context)
         if "tournament" in context:
             tournament = Tournament.dict_to_object(self.app, context["tournament"])
+            context.pop("tournament")
             tournament.save()
-            context["tournament"] = tournament
         return context
 
     def display_tournament(self, context):
         # display tournament, return menu choice between start_round, add player, save result match
         if "tournament_id" in context:
             context["tournament"] = Tournament.find_tournament_by_identifier(self.app, int(context["tournament_id"]))
+            context.pop('tournament_id')
             context["tournament_players"] = []
             for player_id in context["tournament"].players:
                 context["tournament_players"].append(Player.find_player_by_identifier(self.app, player_id))
@@ -91,6 +91,7 @@ class Controller:
     def add_player_into_tournament(self, context):
         if "tournament" in context:
             tournament = context["tournament"]
+
             players = [
                 player
                 for player in Player.list_of_players_by_alphabetic_sort(self.app.players)
@@ -99,14 +100,14 @@ class Controller:
             context["players"] = players
 
             context = self.view.render_view(context)
-            if "tournament" in context:
-                tournament = context["tournament"]
-                if "player_ids" in context:
-                    players_ids_list = context["player_ids"].split(",")
-                    for player_id in players_ids_list:
-                        player_id = player_id.strip()
-                        tournament.add_player(int(player_id))
-                        tournament.save()
+            if "player_ids" in context:
+                players_ids_list = context["player_ids"].split(",")
+                context.pop("player_ids")
+                for player_id in players_ids_list:
+                    player_id = player_id.strip()
+                    tournament.add_player(int(player_id))
+                    tournament.save()
+
         else:
             context["route"] = self.router.HOMEPAGE_ID
         return context
@@ -114,9 +115,11 @@ class Controller:
     def start_round(self, context):
         if "tournament" in context:
             tournament = context["tournament"]
+            context.pop('tournament')
             tournament.start_round()
             tournament.save()
-        context["route"] = self.router.DISPLAY_TOURNAMENT_ID
+            context['tournament_id'] = tournament.identifier
+        context["route_id"] = self.router.DISPLAY_TOURNAMENT_ID
         return context
 
     def save_round(self, context):
@@ -131,7 +134,7 @@ class Controller:
                 else:
                     match.set_match_equality()
             tournament.save()
-        context["route"] = self.router.DISPLAY_TOURNAMENT_ID
+        context["route_id"] = self.router.DISPLAY_TOURNAMENT_ID
         return context
 
     def report_index(self, context):
@@ -143,6 +146,7 @@ class Controller:
             players = Player.list_of_players_by_alphabetic_sort(self.app.players)
         else:
             players = Player.list_of_players_by_ranking_sort(self.app.players)
+        context.pop("sorted_by")
         context["players"] = players
         context = self.view.render_view(context)
         return context
@@ -154,18 +158,21 @@ class Controller:
 
     def report_tournament_rounds(self, context):
         tournament_id = context["tournament_id"]
+        context.pop("tournament_id")
         context["tournament"] = Tournament.find_tournament_by_identifier(self.app, int(tournament_id))
         context = self.view.render_view(context)
         return context
 
     def report_tournament_matchs(self, context):
         tournament_id = context["tournament_id"]
+        context.pop("tournament_id")
         context["tournament"] = Tournament.find_tournament_by_identifier(self.app, int(tournament_id))
         context = self.view.render_view(context)
         return context
 
     def report_tournament_players(self, context):
         tournament_id = context["tournament_id"]
+        context.pop("tournament_id")
         context["tournament"] = Tournament.find_tournament_by_identifier(self.app, int(tournament_id))
         context["tournament_players"] = []
         for player_id in context["tournament"].players:

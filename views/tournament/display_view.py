@@ -9,7 +9,6 @@ if TYPE_CHECKING:
 
 
 class TournamentDisplayView:
-
     def __init__(self, view: "View"):
         self._view = view
 
@@ -25,6 +24,7 @@ class TournamentDisplayView:
         # display tournament, return menu choice between start_round, add player, save result match
         if "tournament" in context:
             tournament = context["tournament"]
+            context.pop("tournament")
             menu_items = [self.router.HOMEPAGE_ID]
             match_ids = []
             lines = [f"Chess tournaments managment - Tournament{tournament.name}"]
@@ -38,15 +38,21 @@ class TournamentDisplayView:
                     "Players ",
                 ]
             )
-            for player in context["tournament_players"]:
-                lines.append(f"{player.first_name} {player.surname}(r:{player.ranking})")
+            if "tournament_players" in context:
+                for player in context["tournament_players"]:
+                    lines.append(f"{player.first_name} {player.surname}(r:{player.ranking})")
+                context.pop("tournament_players")
 
             for round_ in tournament.rounds:
 
                 lines.append(f"Round {round_.name} {round_.state}")
                 lines.append("---------------------")
-                matchs_lines, match_ids = _format_matchs(round_)
+                matchs_lines, match_ids_of_round = _format_matchs(round_)
                 lines.extend(matchs_lines)
+
+            if tournament.active_round:
+                for i in range(1, len(tournament.active_round.matchs) + 1):
+                    match_ids.append(str(i))
 
             lines.extend([self.view.SEPARATOR, f"{self.router.HOMEPAGE_ID} - Homepage"])
             if tournament.state == Tournament.STATE_DRAFT:
@@ -79,12 +85,17 @@ class TournamentDisplayView:
             context = inputs_request(inputs_required, context_key="choice", context=context)
 
             context["route_id"] = context["choice"]["menu"]
+            context.pop("choice")
 
-            if context["route_id"] in [self.router.ADD_PLAYER_INTO_TOURNAMENT_ID, self.router.START_ROUND_ID, self.router.SAVE_ROUND_ID]:
-                context.update({"tournament": tournament})
+            if context["route_id"] in [
+                self.router.ADD_PLAYER_INTO_TOURNAMENT_ID,
+                self.router.START_ROUND_ID,
+                self.router.SAVE_ROUND_ID,
+            ]:
+                context["tournament"] = tournament
 
             if context["route_id"] == self.router.SAVE_ROUND_ID:
-                context.update({"tournament": tournament})
+
                 inputs_required = {
                     "menu": {
                         "question": ["For which match do you want save result?"],
@@ -96,7 +107,8 @@ class TournamentDisplayView:
 
                 context = inputs_request(inputs_required, context_key="choice", context=context)
 
-                match_number = context['choice']['menu']
+                match_number = context["choice"]["menu"]
+                context.pop('choice')
                 context["match"] = tournament.active_round.matchs[int(match_number) - 1]
 
                 inputs_required = {
@@ -111,6 +123,7 @@ class TournamentDisplayView:
                 context = inputs_request(inputs_required, context_key="choice", context=context)
 
                 match_result = context["choice"]["result"]
+                context.pop('choice')
                 context["match_result"] = match_result
 
         return context

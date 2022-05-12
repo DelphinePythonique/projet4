@@ -132,5 +132,4 @@ dmypy.json
 /pyproject.toml
 
 .idea/
-db.json
-flake-report/
+db_test.json

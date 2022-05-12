@@ -29,5 +29,6 @@ class PlayerUpdateRankingView:
 
         context = inputs_request(inputs_required, context_key="player_dict", context=context)
         context["player"].ranking = context["player_dict"]["ranking"]
+        context.pop('player_dict')
         context["route_id"] = self.router.INDEX_PLAYER_ID
         return context
