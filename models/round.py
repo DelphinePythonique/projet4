@@ -1,3 +1,5 @@
+from math import ceil
+
 from models.match import Match
 
 
@@ -39,8 +41,9 @@ class Round:
 
     def do_the_paring_by_ranking(self):
         players = self.tournament.extract_tournament_player_sort_by_ranking()
-        for i in range(0, len(players), 2):
-            self.add_match(players[i], players[i + 1])
+        half_number_player = ceil(len(players) / 2)
+        for i in range(0, half_number_player):
+            self.add_match(players[i], players[i + half_number_player])
 
     def do_the_paring_by_total_rounds_result(self):
         players = self.tournament.extract_tournament_player_sort_by_result()

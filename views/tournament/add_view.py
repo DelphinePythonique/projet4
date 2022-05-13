@@ -55,6 +55,12 @@ class TournamentAddView:
                 "type": str,
                 "constraints": {"choice_ids": Tournament.TYPE_OF_TIME_CONTROL},
             },
+            "number_of_round": {
+                "question": ["Enter number of round"],
+                "type": int,
+                "default": Tournament.DEFAULT_NUMBER_OF_ROUND,
+                "not_null": True,
+                "constraints": {">=": 1}},
         }
 
         context = inputs_request(inputs_required, context_key="tournament", context=context)

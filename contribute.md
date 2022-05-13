@@ -12,12 +12,12 @@ to follow.
 at the time of the construction of the object
 
 ## Scenario
-1) When the application begin, the homepage is requested.
+1) when the application begin, the home screen's route is requested.
 2) the request is forwarded to the router object
 3) the router object thanks to  a dictionary *mapping* of correspondence between 
 the route and the method of the controller to call, call controller's method.
-4) the controller passes, via context, all useful objects to a view dispatcher, which calls the view bound to the route
-5) the specific view is displayed, which return user response, like the next route, thank the context 
+4) the controller passes, via context, all useful objects to a view dispatcher, which calls the specific view bound to the route
+5) the specific view is displayed, which return user response(s), like the next route, thank the context 
 
 ## HOW TO
 
@@ -94,6 +94,8 @@ inputs_required = {
         print("Enter player informations")
         context = inputs_request(inputs_required, context_key="player", context=context)
 ```
+
+>  **Do not forget to remove concept key when is consumed**
 
 
 

@@ -23,7 +23,7 @@ class ReportTournamentRoundsView:
         tournament = context["tournament"]
         context.pop("tournament")
         lines = [
-            f"Chess tournaments managment - Rounds of tournament {context['tournament']}",
+            f"Chess tournaments managment - Rounds of tournament {tournament.name}",
         ]
 
         lines.extend([

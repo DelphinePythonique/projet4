@@ -132,9 +132,7 @@ class Tournament:
                     self.app.tournament_table.update(add("players", [player]), doc_ids=[self.identifier])
             self.app.tournament_table.update(set("rounds", []), doc_ids=[self.identifier])
             for round in self.rounds:
-                self.app.tournament_table.update(
-                    add("rounds", [round.serialized_round()]), doc_ids=[self.identifier]
-                )
+                self.app.tournament_table.update(add("rounds", [round.serialized_round()]), doc_ids=[self.identifier])
 
         else:
             self.app.tournament_table.insert(Document(self.serialized_tournament(), doc_id=self.identifier))
@@ -200,13 +198,17 @@ class Tournament:
 
     def extract_tournament_player_sort_by_ranking(self):
         tournament_players_order_by_ranking = [
-            player for player in Player.list_of_players_by_ranking_sort(self.app.players) if player.identifier in self.players
+            player
+            for player in Player.list_of_players_by_ranking_sort(self.app.players)
+            if player.identifier in self.players
         ]
         return tournament_players_order_by_ranking
 
     def extract_tournament_player_sort_by_alphabetic(self):
         tournament_players_order_by_alphabetic = [
-            player for player in Player.list_of_players_by_alphabetic_sort(self.app.players) if player.identifier in self.players
+            player
+            for player in Player.list_of_players_by_alphabetic_sort(self.app.players)
+            if player.identifier in self.players
         ]
         return tournament_players_order_by_alphabetic
 
@@ -221,11 +223,11 @@ class Tournament:
 
     def extract_tournament_player_sort_by_result(self):
         total_result_of_players_tuple = self.get_total_result_of_players()
-        total_result_of_players_tuple_order_by_alpha = sorted(
-            total_result_of_players_tuple, key=lambda player: player[0].surname
+        total_result_of_players_tuple_order_by_ranking = sorted(
+            total_result_of_players_tuple, key=lambda player: player[0].ranking
         )
         total_result_of_players_tuple_order_by_result = sorted(
-            total_result_of_players_tuple_order_by_alpha, key=itemgetter(1), reverse=True
+            total_result_of_players_tuple_order_by_ranking, key=itemgetter(1), reverse=True
         )
 
         return total_result_of_players_tuple_order_by_result
@@ -260,8 +262,8 @@ class Tournament:
                 )
                 tournament.rounds.append(round)
                 for serialized_match in serialized_round["matchs"]:
-                    player1 = Player.find_player_by_identifier(app, serialized_match[0][0]['Identifier'])
-                    player2 = Player.find_player_by_identifier(app, serialized_match[1][0]['Identifier'])
+                    player1 = Player.find_player_by_identifier(app, serialized_match[0][0]["Identifier"])
+                    player2 = Player.find_player_by_identifier(app, serialized_match[1][0]["Identifier"])
                     Match(
                         round,
                         player1,
@@ -272,6 +274,14 @@ class Tournament:
 
     @classmethod
     def dict_to_object(cls, app, dict_tournament):
+        name = "",
+        place = "",
+        begin_date = "",
+        end_date = "",
+        time_control = "",
+        description = "",
+        number_of_round = "",
+
         if "name" in dict_tournament:
             name = dict_tournament["name"]
         if "place" in dict_tournament:
@@ -284,8 +294,19 @@ class Tournament:
             time_control = dict_tournament["time_control"]
         if "description" in dict_tournament:
             description = dict_tournament["description"]
+        if "number_of_round" in dict_tournament:
+            number_of_round = dict_tournament["number_of_round"]
 
-        return Tournament(app, name, place, begin_date, end_date, time_control, description)
+        return Tournament(
+            app,
+            name=name,
+            place=place,
+            begin_date=begin_date,
+            end_date=end_date,
+            time_control=time_control,
+            description=description,
+            number_of_round=number_of_round,
+        )
 
     @classmethod
     def find_tournament_by_identifier(cls, app, identifier):

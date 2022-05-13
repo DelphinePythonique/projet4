@@ -5,6 +5,7 @@ from datetime import datetime
 def inputs_request(inputs_required, context_key, context):
     for field, question_field in inputs_required.items():
         print("\n".join(question_field["question"]))
+
         if context_key not in context:
             context[context_key] = {}
         if "constraints" in question_field:
@@ -12,8 +13,12 @@ def inputs_request(inputs_required, context_key, context):
                 if question_field["constraints"][">="] in context[context_key]:
                     question_field["constraints"][">="] = context[context_key][question_field["constraints"][">="]]
         check_input_is_ok = False
+
         while not check_input_is_ok:
-            check_input_is_ok, value = check_input(question_field, input())
+            value_to_check = input()
+            if "default" in question_field and value_to_check.strip() == "":
+                value_to_check = question_field["default"]
+            check_input_is_ok, value = check_input(question_field, value_to_check)
             if not check_input_is_ok:
                 print(f"{value}, try again")
             else:
@@ -43,6 +48,7 @@ def check_input(description_dict, input_value):
     status, input_value = check_type(input_value, description_dict["type"])
     if not status:
         return False, f"This value must be {description_dict['type'].__name__} "
+
     if "not_null" in description_dict:
         if description_dict["not_null"]:
             if check_not_null(input_value):
@@ -61,7 +67,8 @@ def check_type(value, type_):
             if value.strip() != "":
                 datetime.strptime(value, "%d/%m/%Y")
         if type_ == int:
-            typed_value = int(value)
+            if str(value).strip() != "":
+                typed_value = int(value)
 
     except ValueError:
         return False, typed_value
