@@ -65,4 +65,7 @@ if __name__ == "__main__":
     # app.charge_fixtures()
     context = {'route_id': app.router.HOMEPAGE_ID}
     while 'route_id' in context:
-        context = app.router.call_controller_method(context)
+        if context["route_id"] != app.router.QUIT_ID:
+            context = app.router.call_controller_method(context)
+        else:
+            exit(0)

@@ -3,7 +3,7 @@
 ## Goals: 
 Ultimately, our goal will be to manage chess tournament
 
-version: 1.0.2
+version: 1.1.0
 
 ## Summary
 

@@ -24,6 +24,7 @@ class AppView:
             f"{self.router.INDEX_PLAYER_ID}  - Manage players",
             f"{self.router.INDEX_TOURNAMENT_ID}  - Manage tournaments",
             f"{self.router.REPORT_INDEX_ID} - Reports",
+            f"{self.router.QUIT_ID}  - Exit",
             "Enter the number of the action to be perform and press enter",
         ]
         inputs_required = {
@@ -36,6 +37,7 @@ class AppView:
                         self.router.INDEX_PLAYER_ID,
                         self.router.INDEX_TOURNAMENT_ID,
                         self.router.REPORT_INDEX_ID,
+                        self.router.QUIT_ID,
                     ]
                 },
             },

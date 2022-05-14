@@ -25,6 +25,7 @@ class Router:
     REPORT_TOURNAMENT_MATCHS = "report_tournament_matchs"
     REPORT_TOURNAMENT_PLAYERS = "report_tournament_players"
 """
+    QUIT_ID = "0"
     HOMEPAGE_ID = "1"
     INDEX_PLAYER_ID = "2"
     INDEX_TOURNAMENT_ID = "3"
