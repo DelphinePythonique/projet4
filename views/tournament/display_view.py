@@ -45,7 +45,7 @@ class TournamentDisplayView:
 
             for round_ in tournament.rounds:
 
-                lines.append(f"Round {round_.name} {round_.state}")
+                lines.append(f"Round {round_.name} {round_.state} from {round_.begin_date} to {round_.end_date}")
                 lines.append("---------------------")
                 matchs_lines, match_ids_of_round = _format_matchs(round_)
                 lines.extend(matchs_lines)

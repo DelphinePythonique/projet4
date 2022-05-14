@@ -1,3 +1,4 @@
+from datetime import datetime
 from math import ceil
 
 from models.match import Match
@@ -57,6 +58,8 @@ class Round:
                 self.do_the_paring_by_ranking()
             elif paring_method == Round.RESULT_PARING_METHOD:
                 self.do_the_paring_by_total_rounds_result()
+            now_date = datetime.now()
+            self.begin_date = now_date.strftime("%d/%m/%Y - %H:%M")
 
     def add_match(self, player1, player2):
         Match(self, player1, player2)

@@ -25,16 +25,17 @@ class ReportTournamentRoundsView:
         lines = [
             f"Chess tournaments managment - Rounds of tournament {tournament.name}",
         ]
+        for round_ in tournament.rounds:
+            # if round_ == tournament.active_round:
+
+            lines.append(f"Round {round_.name} {round_.state} from {round_.begin_date} to {round_.end_date}")
 
         lines.extend([
             f"{self.router.REPORT_INDEX_ID} - Menu Report",
             f"{self.router.REPORT_TOURNAMENT_ID} - Report Tournament",
             "Enter the number of the action to be perform and press enter",
         ])
-        for round_ in tournament.rounds:
-            # if round_ == tournament.active_round:
 
-            lines.append(f"Round {round_.name} {round_.state}")
         inputs_required = {
             "menu": {
                 "question": lines,

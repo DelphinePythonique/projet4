@@ -106,7 +106,7 @@ class Tournament:
         return state_round
 
     @property
-    def active_round(self):
+    def active_round(self) -> Round:
         in_progress_round, next_round = self.which_in_progress_round_and_next_round()
         return in_progress_round
 

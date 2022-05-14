@@ -1,7 +1,9 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from models.match import Match
 from models.player import Player
+from models.round import Round
 from models.tournament import Tournament
 from views.view import View
 
@@ -104,9 +106,10 @@ class Controller:
                 players_ids_list = context["player_ids"].split(",")
                 context.pop("player_ids")
                 for player_id in players_ids_list:
-                    player_id = player_id.strip()
-                    tournament.add_player(int(player_id))
-                    tournament.save()
+                    player_id = int(player_id.strip())
+                    if player_id not in tournament.players:
+                        tournament.add_player(player_id)
+                tournament.save()
 
         else:
             context["route"] = self.router.HOMEPAGE_ID
@@ -133,6 +136,10 @@ class Controller:
                     match.set_player_two_is_winner()
                 else:
                     match.set_match_equality()
+                if match.round.state == Round.STATE_STOP:
+                    now_date = datetime.now()
+                    match.round.end_date = now_date.strftime("%d/%m/%Y - %H:%M")
+
             tournament.save()
         context["route_id"] = self.router.DISPLAY_TOURNAMENT_ID
         return context
