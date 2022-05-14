@@ -3,7 +3,7 @@
 ## Goals: 
 Ultimately, our goal will be to manage chess tournament
 
-version: 1.0.1
+version: 1.0.2
 
 ## Summary
 
@@ -57,11 +57,11 @@ Position yourself in the local directory in which you want to position the sourc
 ```
 - Install dependencies
 ``` bash
- python install -r requirements.txt
+ pip install -r requirements.txt
 ```
 - Install dev dependencies
 ``` bash
- python install -r requirements_dev.txt
+ pip install -r requirements_dev.txt
 ```
 
 - generate the flake8-html report
