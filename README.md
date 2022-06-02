@@ -2,7 +2,7 @@
 
 ## Goals: 
 Ultimately, our goal will be to manage chess tournament
-
+![how to use project 4 ](project4.gif)
 version: 1.2.0
 
 ## Summary
